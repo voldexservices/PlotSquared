@@ -1,0 +1,9 @@
+com.intellectualcrafters.jnbt
+com.intellectualcrafters.plot
+com.intellectualcrafters.plot.api
+com.intellectualcrafters.plot.commands
+com.intellectualcrafters.plot.database
+com.intellectualcrafters.plot.events
+com.intellectualcrafters.plot.generator
+com.intellectualcrafters.plot.listeners
+com.intellectualcrafters.plot.uuid

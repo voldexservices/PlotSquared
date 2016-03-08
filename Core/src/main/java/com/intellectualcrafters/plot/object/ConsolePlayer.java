@@ -74,10 +74,10 @@ public class ConsolePlayer extends PlotPlayer {
     }
     
     @Override
-    public void teleport(final Location loc) {
-        final Plot plot = loc.getPlot();
+    public void teleport(final Location location) {
+        final Plot plot = location.getPlot();
         setMeta("lastplot", plot);
-        setMeta("location", loc);
+        setMeta("location", location);
     }
     
     @Override
@@ -91,7 +91,7 @@ public class ConsolePlayer extends PlotPlayer {
     }
     
     @Override
-    public void setCompassTarget(final Location loc) {}
+    public void setCompassTarget(final Location location) {}
     
     @Override
     public void loadData() {}
@@ -148,7 +148,7 @@ public class ConsolePlayer extends PlotPlayer {
     public void setFlight(final boolean fly) {}
     
     @Override
-    public void playMusic(final Location loc, final int id) {}
+    public void playMusic(final Location location, final int id) {}
     
     @Override
     public void kick(final String message) {}

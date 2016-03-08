@@ -43,13 +43,13 @@ public class MainUtil {
     /**
      * 
      * @deprecated
-     * @param loc
+     * @param location
      * @return
      */
     @Deprecated
-    public static PlotId getPlotId(Location loc) {
-        PlotArea area = loc.getPlotArea();
-        return area == null ? null : area.getPlotManager().getPlotId(area, loc.getX(), loc.getY(), loc.getZ());
+    public static PlotId getPlotId(Location location) {
+        PlotArea area = location.getPlotArea();
+        return area == null ? null : area.getPlotManager().getPlotId(area, location.getX(), location.getY(), location.getZ());
     }
 
     /**
@@ -413,10 +413,10 @@ public class MainUtil {
     /**
      * Resend the chunk at a location
      * @param world
-     * @param loc
+     * @param location
      */
-    public static void update(final String world, final ChunkLoc loc) {
-        SetQueue.IMP.queue.sendChunk(world, Collections.singletonList(loc));
+    public static void update(final String world, final ChunkLoc location) {
+        SetQueue.IMP.queue.sendChunk(world, Collections.singletonList(location));
     }
 
     public static File getFile(File base, String path) {
@@ -768,11 +768,11 @@ public class MainUtil {
     /**
      * Get a list of names given a list of uuids.<br>
      * - Uses the format {@link C#PLOT_USER_LIST} for the returned string
-     * @param uuids
+     * @param uniqueIds
      * @return
      */
-    public static String getPlayerList(final Collection<UUID> uuids) {
-        final ArrayList<UUID> l = new ArrayList<>(uuids);
+    public static String getPlayerList(final Collection<UUID> uniqueIds) {
+        final ArrayList<UUID> l = new ArrayList<>(uniqueIds);
         if (l.isEmpty()) {
             return C.NONE.s();
         }

@@ -1,8 +1,5 @@
 package com.intellectualcrafters.plot;
 
-import java.io.File;
-import java.util.List;
-
 import com.intellectualcrafters.plot.generator.GeneratorWrapper;
 import com.intellectualcrafters.plot.generator.HybridUtils;
 import com.intellectualcrafters.plot.generator.IndependentPlotGenerator;
@@ -20,17 +17,20 @@ import com.intellectualcrafters.plot.util.TaskManager;
 import com.intellectualcrafters.plot.util.UUIDHandlerImplementation;
 import com.intellectualcrafters.plot.util.WorldUtil;
 
+import java.io.File;
+import java.util.List;
+
 public interface IPlotMain {
     
     /**
      * Log a message to console
-     * @param message
+     * @param message The message to log
      */
     void log(final String message);
     
     /**
      * Get the `PlotSquared` directory (e.g. /plugins/PlotSquared or /mods/PlotSquared)
-     * @return
+     * @return The plugin storage directory
      */
     File getDirectory();
     

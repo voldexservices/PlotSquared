@@ -47,7 +47,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * The plot class
  */
-@SuppressWarnings("javadoc")
 public class Plot {
     /**
      * @deprecated raw access is deprecated
@@ -240,13 +239,13 @@ public class Plot {
      *
      * @see PlotPlayer#getCurrentPlot() if a player is expected here.
      *
-     * @param loc
+     * @param location
      * @return
      */
-    public static Plot getPlot(final Location loc) {
-        final PlotArea pa = PS.get().getPlotAreaAbs(loc);
+    public static Plot getPlot(final Location location) {
+        final PlotArea pa = PS.get().getPlotAreaAbs(location);
         if (pa != null) {
-            return pa.getPlot(loc);
+            return pa.getPlot(location);
         }
         return null;
     }

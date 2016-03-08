@@ -101,11 +101,13 @@ public class BukkitPlayer extends PlotPlayer {
     }
     
     @Override
-    public void teleport(final Location loc) {
-        if (Math.abs(loc.getX()) >= 30000000 || Math.abs(loc.getZ()) >= 30000000) {
+    public void teleport(final Location location) {
+        if (Math.abs(location.getX()) >= 30000000 || Math.abs(location.getZ()) >= 30000000) {
             return;
         }
-        player.teleport(new org.bukkit.Location(BukkitUtil.getWorld(loc.getWorld()), loc.getX() + 0.5, loc.getY(), loc.getZ() + 0.5, loc.getYaw(), loc.getPitch()), TeleportCause.COMMAND);
+        player.teleport(new org.bukkit.Location(BukkitUtil.getWorld(location.getWorld()), location.getX() + 0.5, location.getY(), location.getZ() + 0.5, location
+
+                .getYaw(), location.getPitch()), TeleportCause.COMMAND);
     }
     
     @Override
@@ -122,8 +124,8 @@ public class BukkitPlayer extends PlotPlayer {
     }
     
     @Override
-    public void setCompassTarget(final Location loc) {
-        player.setCompassTarget(new org.bukkit.Location(BukkitUtil.getWorld(loc.getWorld()), loc.getX(), loc.getY(), loc.getZ()));
+    public void setCompassTarget(final Location location) {
+        player.setCompassTarget(new org.bukkit.Location(BukkitUtil.getWorld(location.getWorld()), location.getX(), location.getY(), location.getZ()));
         
     }
     
@@ -207,8 +209,8 @@ public class BukkitPlayer extends PlotPlayer {
     }
     
     @Override
-    public void playMusic(final Location loc, final int id) {
-        player.playEffect(BukkitUtil.getLocation(loc), Effect.RECORD_PLAY, id);
+    public void playMusic(final Location location, final int id) {
+        player.playEffect(BukkitUtil.getLocation(location), Effect.RECORD_PLAY, id);
     }
     
     @Override

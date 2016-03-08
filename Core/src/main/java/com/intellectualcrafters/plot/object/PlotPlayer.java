@@ -30,11 +30,11 @@ public abstract class PlotPlayer implements CommandCaller {
      *  - Accepts player name (online)
      *  - Accepts UUID
      *  - Accepts bukkit OfflinePlayer (offline)
-     * @param obj
+     * @param object
      * @return
      */
-    public static PlotPlayer wrap(final Object obj) {
-        return PS.get().IMP.wrapPlayer(obj);
+    public static PlotPlayer wrap(final Object object) {
+        return PS.get().IMP.wrapPlayer(object);
     }
     
     /**
@@ -150,9 +150,9 @@ public abstract class PlotPlayer implements CommandCaller {
     }
     
     /**
-     * Get the number of plots the player owns in the world
-     * @param world
-     * @return
+     * Returns the number of plots the player owns in the world.
+     * @param world The world
+     * @return the number of plots
      */
     public int getPlotCount(final String world) {
         final UUID uuid = getUUID();
@@ -252,27 +252,27 @@ public abstract class PlotPlayer implements CommandCaller {
     
     /**
      * Teleport the player to a location
-     * @param loc
+     * @param location
      */
-    public abstract void teleport(final Location loc);
+    public abstract void teleport(final Location location);
     
     /**
-     * Is the player online
-     * @return
+     * Checks if this player is online or not
+     * @return True if the player is online
      */
     public abstract boolean isOnline();
     
     /**
-     * Get the player's name
-     * @return
+     * Getd the player's username
+     * @return The player's username
      */
     public abstract String getName();
     
     /**
      * Set the compass target
-     * @param loc
+     * @param location
      */
-    public abstract void setCompassTarget(final Location loc);
+    public abstract void setCompassTarget(final Location location);
     
     /**
      * Load the player data from disk (if applicable)
@@ -325,20 +325,20 @@ public abstract class PlotPlayer implements CommandCaller {
     public abstract void setWeather(final PlotWeather weather);
     
     /**
-     * Get the player's gamemode
-     * @return
+     * Returns the gamemode of the player.
+     * @return The gamemode of the player.
      */
     public abstract PlotGamemode getGamemode();
     
     /**
-     * Set the player's gamemode
-     * @param gamemode
+     * Assigns a gamemode to a player.
+     * @param gameMode The {@link PlotGamemode}
      */
-    public abstract void setGamemode(final PlotGamemode gamemode);
+    public abstract void setGamemode(final PlotGamemode gameMode);
     
     /**
      * Set the player's local time (ticks)
-     * @param time
+     * @param time The time the player percieves.
      */
     public abstract void setTime(final long time);
     
@@ -350,14 +350,14 @@ public abstract class PlotPlayer implements CommandCaller {
     
     /**
      * Play music at a location for the player
-     * @param loc
+     * @param location The {@link Location}
      * @param id
      */
-    public abstract void playMusic(final Location loc, final int id);
+    public abstract void playMusic(final Location location, final int id);
     
     /**
      * Check if the player is banned
-     * @return
+     * @return True if the player is banned, false otherwise
      */
     public abstract boolean isBanned();
     

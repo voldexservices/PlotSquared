@@ -101,16 +101,16 @@ public class SpongePlayer extends PlotPlayer {
     }
     
     @Override
-    public void teleport(final Location loc) {
-        if ((Math.abs(loc.getX()) >= 30000000) || (Math.abs(loc.getZ()) >= 30000000)) {
+    public void teleport(final Location location) {
+        if ((Math.abs(location.getX()) >= 30000000) || (Math.abs(location.getZ()) >= 30000000)) {
             return;
         }
         final String world = player.getWorld().getName();
-        if (!world.equals(loc.getWorld())) {
-            player.transferToWorld(loc.getWorld(), new Vector3d(loc.getX(), loc.getY(), loc.getZ()));
+        if (!world.equals(location.getWorld())) {
+            player.transferToWorld(location.getWorld(), new Vector3d(location.getX(), location.getY(), location.getZ()));
         } else {
             org.spongepowered.api.world.Location current = player.getLocation();
-            current = current.setPosition(new Vector3d(loc.getX(), loc.getY(), loc.getZ()));
+            current = current.setPosition(new Vector3d(location.getX(), location.getY(), location.getZ()));
             player.setLocation(current);
         }
     }
@@ -129,9 +129,9 @@ public class SpongePlayer extends PlotPlayer {
     }
     
     @Override
-    public void setCompassTarget(final Location loc) {
+    public void setCompassTarget(final Location location) {
         final TargetedLocationData target = player.getOrCreate(TargetedLocationData.class).get();
-        target.set(Keys.TARGETED_LOCATION, SpongeUtil.getLocation(loc));
+        target.set(Keys.TARGETED_LOCATION, SpongeUtil.getLocation(location));
     }
     
     @Override
@@ -201,46 +201,46 @@ public class SpongePlayer extends PlotPlayer {
     }
     
     @Override
-    public void playMusic(final Location loc, final int id) {
+    public void playMusic(final Location location, final int id) {
         switch (id) {
             case 0:
-                player.playSound(null, SpongeUtil.getLocation(loc).getPosition(), 1);
+                player.playSound(null, SpongeUtil.getLocation(location).getPosition(), 1);
                 break;
             case 2256:
-                player.playSound(SoundTypes.RECORDS_11, SpongeUtil.getLocation(loc).getPosition(), 1);
+                player.playSound(SoundTypes.RECORDS_11, SpongeUtil.getLocation(location).getPosition(), 1);
                 break;
             case 2257:
-                player.playSound(SoundTypes.RECORDS_13, SpongeUtil.getLocation(loc).getPosition(), 1);
+                player.playSound(SoundTypes.RECORDS_13, SpongeUtil.getLocation(location).getPosition(), 1);
                 break;
             case 2258:
-                player.playSound(SoundTypes.RECORDS_BLOCKS, SpongeUtil.getLocation(loc).getPosition(), 1);
+                player.playSound(SoundTypes.RECORDS_BLOCKS, SpongeUtil.getLocation(location).getPosition(), 1);
                 break;
             case 2259:
-                player.playSound(SoundTypes.RECORDS_CAT, SpongeUtil.getLocation(loc).getPosition(), 1);
+                player.playSound(SoundTypes.RECORDS_CAT, SpongeUtil.getLocation(location).getPosition(), 1);
                 break;
             case 2260:
-                player.playSound(SoundTypes.RECORDS_CHIRP, SpongeUtil.getLocation(loc).getPosition(), 1);
+                player.playSound(SoundTypes.RECORDS_CHIRP, SpongeUtil.getLocation(location).getPosition(), 1);
                 break;
             case 2261:
-                player.playSound(SoundTypes.RECORDS_FAR, SpongeUtil.getLocation(loc).getPosition(), 1);
+                player.playSound(SoundTypes.RECORDS_FAR, SpongeUtil.getLocation(location).getPosition(), 1);
                 break;
             case 2262:
-                player.playSound(SoundTypes.RECORDS_MALL, SpongeUtil.getLocation(loc).getPosition(), 1);
+                player.playSound(SoundTypes.RECORDS_MALL, SpongeUtil.getLocation(location).getPosition(), 1);
                 break;
             case 2263:
-                player.playSound(SoundTypes.RECORDS_MELLOHI, SpongeUtil.getLocation(loc).getPosition(), 1);
+                player.playSound(SoundTypes.RECORDS_MELLOHI, SpongeUtil.getLocation(location).getPosition(), 1);
                 break;
             case 2264:
-                player.playSound(SoundTypes.RECORDS_STAL, SpongeUtil.getLocation(loc).getPosition(), 1);
+                player.playSound(SoundTypes.RECORDS_STAL, SpongeUtil.getLocation(location).getPosition(), 1);
                 break;
             case 2265:
-                player.playSound(SoundTypes.RECORDS_STRAD, SpongeUtil.getLocation(loc).getPosition(), 1);
+                player.playSound(SoundTypes.RECORDS_STRAD, SpongeUtil.getLocation(location).getPosition(), 1);
                 break;
             case 2266:
-                player.playSound(SoundTypes.RECORDS_WAIT, SpongeUtil.getLocation(loc).getPosition(), 1);
+                player.playSound(SoundTypes.RECORDS_WAIT, SpongeUtil.getLocation(location).getPosition(), 1);
                 break;
             case 2267:
-                player.playSound(SoundTypes.RECORDS_WARD, SpongeUtil.getLocation(loc).getPosition(), 1);
+                player.playSound(SoundTypes.RECORDS_WARD, SpongeUtil.getLocation(location).getPosition(), 1);
                 break;
         }
     }

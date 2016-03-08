@@ -19,8 +19,7 @@ public abstract class PlotGenerator<T> {
      * new AugmentedPopulator(world, generator, cluster, plotWorld.TERRAIN == 2, plotWorld.TERRAIN != 2);
      * TYPE = 1
      * new AugmentedPopulator(world, gen_class, null, plotWorld.TERRAIN == 2, plotWorld.TERRAIN != 2);
-     * @param cluster Will be the cluster, or null
-     * @param plotworld
+     * @param area
      */
     public abstract void augment(PlotArea area);
     

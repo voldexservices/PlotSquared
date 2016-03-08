@@ -36,8 +36,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * An implementation of the core,
- * with a static getter for easy access
+ * An implementation of the core, with a static getter for easy access.
  *
  * @author Sauilitired | Citymonstret
  * @author boy0001 | Empire92
@@ -82,10 +81,7 @@ public class PS {
     private Database database;
     private Thread thread;
 
-    /**
-     * Initialize PlotSquared with the desired Implementation class
-     * @param imp_class
-     */
+    /** Initialize PlotSquared with the desired Implementation class */
     public PS(final IPlotMain imp_class, final String platform) {
         try {
             instance = this;
@@ -363,10 +359,10 @@ public class PS {
      *  - If the plot area for a location cannot be unambiguously resolved; null will be returned<br>
      *  <br>
      * Note: An applicable plot area may not include the location i.e. clusters
-     * @param loc
+     * @param location
      * @return
      */
-    public PlotArea getApplicablePlotArea(Location loc) {
+    public PlotArea getApplicablePlotArea(Location location) {
         switch (plotareas.length) {
             case 0:
                 return null;
@@ -379,18 +375,18 @@ public class PS {
             case 6:
             case 7:
             case 8:
-                String world = loc.getWorld();
+                String world = location.getWorld();
                 int hash = world.hashCode();
                 for (PlotArea area : plotareas) {
                     if (hash == area.worldhash) {
-                        if (area.contains(loc.getX(), loc.getZ()) && (!plotareaHasCollision || world.equals(area.worldname))) {
+                        if (area.contains(location.getX(), location.getZ()) && (!plotareaHasCollision || world.equals(area.worldname))) {
                             return area;
                         }
                     }
                 }
                 return null;
             default:
-                PlotArea[] areas = plotareamap.get(loc.getWorld());
+                PlotArea[] areas = plotareamap.get(location.getWorld());
                 if (areas == null) {
                     return null;
                 }
@@ -406,8 +402,8 @@ public class PS {
                     case 6:
                     case 7:
                     case 8:
-                        x = loc.getX();
-                        y = loc.getY();
+                        x = location.getX();
+                        y = location.getY();
                         for (PlotArea area : areas) {
                             if (area.contains(x, y)) {
                                 return area;
@@ -415,8 +411,8 @@ public class PS {
                         }
                         return null;
                     default:
-                        QuadMap<PlotArea> search = plotareagrid.get(loc.getWorld());
-                        return search.get(loc.getX(), loc.getZ());
+                        QuadMap<PlotArea> search = plotareagrid.get(location.getWorld());
+                        return search.get(location.getX(), location.getZ());
                 }
         }
     }
@@ -486,19 +482,19 @@ public class PS {
     }
 
     /**
-     * Get the plot area which contains a location.<br>
-     *  - If the plot area does not contain a location, null will be returned
+     * Get the {@link PlotArea} which contains a {@link Location}.<br>
+     *  - If the {@link PlotArea} does not contain a {@link Location}, null will be returned.
      *
-     * @param loc
-     * @return
+     * @param location The location
+     * @return The {@link PlotArea}, if exists.
      */
-    public PlotArea getPlotAreaAbs(Location loc) {
+    public PlotArea getPlotAreaAbs(Location location) {
         switch (plotareas.length) {
             case 0:
                 return null;
             case 1:
                 PlotArea pa = plotareas[0];
-                return pa.contains(loc) ? pa : null;
+                return pa.contains(location) ? pa : null;
             case 2:
             case 3:
             case 4:
@@ -506,18 +502,18 @@ public class PS {
             case 6:
             case 7:
             case 8:
-                String world = loc.getWorld();
+                String world = location.getWorld();
                 int hash = world.hashCode();
                 for (PlotArea area : plotareas) {
                     if (hash == area.worldhash) {
-                        if (area.contains(loc.getX(), loc.getZ()) && (!plotareaHasCollision || world.equals(area.worldname))) {
+                        if (area.contains(location.getX(), location.getZ()) && (!plotareaHasCollision || world.equals(area.worldname))) {
                             return area;
                         }
                     }
                 }
                 return null;
             default:
-                PlotArea[] areas = plotareamap.get(loc.getWorld());
+                PlotArea[] areas = plotareamap.get(location.getWorld());
                 if (areas == null) {
                     return null;
                 }
@@ -526,7 +522,7 @@ public class PS {
                 switch (areas.length) {
                     case 0:
                         PlotArea a = areas[0];
-                        return a.contains(loc.getX(), loc.getZ()) ? a : null;
+                        return a.contains(location.getX(), location.getZ()) ? a : null;
                     case 2:
                     case 3:
                     case 4:
@@ -534,8 +530,8 @@ public class PS {
                     case 6:
                     case 7:
                     case 8:
-                        x = loc.getX();
-                        y = loc.getY();
+                        x = location.getX();
+                        y = location.getY();
                         for (PlotArea area : areas) {
                             if (area.contains(x, y)) {
                                 return area;
@@ -543,8 +539,8 @@ public class PS {
                         }
                         return null;
                     default:
-                        QuadMap<PlotArea> search = plotareagrid.get(loc.getWorld());
-                        return search.get(loc.getX(), loc.getZ());
+                        QuadMap<PlotArea> search = plotareagrid.get(location.getWorld());
+                        return search.get(location.getX(), location.getZ());
                 }
         }
     }
@@ -685,8 +681,8 @@ public class PS {
 
     /**
      * A more generic way to filter plots - make your own method if you need complex filters
-     * @param filters
-     * @return
+     * @param filters The {@link PlotFilter} to use for filtering plots
+     * @return The set of plots for which the {@link PlotFilter} returned false
      */
     public Set<Plot> getPlots(final PlotFilter... filters) {
         final HashSet<Plot> set = new HashSet<>();
@@ -754,7 +750,7 @@ public class PS {
 
     /**
      * Get all the base plots in a single set (for merged plots it just returns the bottom plot)
-     * @return Set of base Plot
+     * @return A {@link Set} of {@link Plot}s
      */
     public Set<Plot> getBasePlots() {
         int size = getPlotCount();
@@ -1068,17 +1064,17 @@ public class PS {
 
     /**
      * Sort a collection of plots by world (with a priority world), then by hashcode
-     * @param myplots
+     * @param plots
      * @param type The sorting method to use for each world (timestamp, or hash)
      * @param priorityArea - Use null, "world" or "gibberish" if you want default world order
      * @return ArrayList of plot
      */
-    public ArrayList<Plot> sortPlots(final Collection<Plot> myplots, final SortType type, final PlotArea priorityArea) {
+    public ArrayList<Plot> sortPlots(final Collection<Plot> plots, final SortType type, final PlotArea priorityArea) {
         // group by world
         // sort each
         final HashMap<PlotArea, Collection<Plot>> map = new HashMap<>();
         int totalSize = getPlotCount();
-        if (myplots.size() == totalSize) {
+        if (plots.size() == totalSize) {
             for (PlotArea area : plotareas) {
                 map.put(area, area.getPlots());
             }
@@ -1088,7 +1084,7 @@ public class PS {
             }
             Collection<Plot> lastList = null;
             PlotArea lastWorld = null;
-            for (final Plot plot : myplots) {
+            for (final Plot plot : plots) {
                 if (lastWorld == plot.getArea()) {
                     lastList.add(plot);
                 } else {
@@ -1108,7 +1104,7 @@ public class PS {
                 return a.hashCode() - b.hashCode();
             }
         });
-        final ArrayList<Plot> toReturn = new ArrayList<>(myplots.size());
+        final ArrayList<Plot> toReturn = new ArrayList<>(plots.size());
         for (final PlotArea area : areas) {
             switch (type) {
                 case CREATION_DATE:
@@ -1129,9 +1125,9 @@ public class PS {
 
     /**
      * Get all the plots owned by a player name
-     * @param world
-     * @param player
-     * @return Set of Plot
+     * @param world The world
+     * @param player The player
+     * @return A {@link Set} of {@link Plot}s
      */
     public Set<Plot> getPlots(final String world, final String player) {
         final UUID uuid = UUIDHandler.getUUID(player, null);
@@ -1141,8 +1137,8 @@ public class PS {
     /**
      * Get all the plots owned by a player name
      * @param area
-     * @param player
-     * @return Set of Plot
+     * @param player The player
+     * @return A {@link Set} of {@link Plot}s
      */
     public Set<Plot> getPlots(final PlotArea area, final String player) {
         final UUID uuid = UUIDHandler.getUUID(player, null);
@@ -1151,9 +1147,9 @@ public class PS {
 
     /**
      * Get all plots by a PlotPlayer
-     * @param world
+     * @param world The world
      * @param player
-     * @return Set of plot
+     * @return A {@link Set} of {@link Plot}s
      */
     public Set<Plot> getPlots(final String world, final PlotPlayer player) {
         final UUID uuid = player.getUUID();
@@ -1164,7 +1160,7 @@ public class PS {
      * Get all plots by a PlotPlayer
      * @param area
      * @param player
-     * @return Set of plot
+     * @return A {@link Set} of {@link Plot}s
      */
     public Set<Plot> getPlots(final PlotArea area, final PlotPlayer player) {
         final UUID uuid = player.getUUID();
@@ -1173,9 +1169,9 @@ public class PS {
 
     /**
      * Get all plots by a UUID in a world
-     * @param world
-     * @param uuid
-     * @return Set of plot
+     * @param world The world
+     * @param uuid The {@link UUID}
+     * @return A {@link Set} of {@link Plot}s
      */
     public Set<Plot> getPlots(final String world, final UUID uuid) {
         final ArrayList<Plot> myplots = new ArrayList<>();
@@ -1192,7 +1188,7 @@ public class PS {
     /**
      * Get all plots by a UUID in an area
      * @param area
-     * @param uuid
+     * @param uuid The {@link UUID}
      * @return Set of plot
      */
     public Set<Plot> getPlots(final PlotArea area, final UUID uuid) {
@@ -1221,7 +1217,7 @@ public class PS {
 
     /**
      * Check if a plot world
-     * @param world
+     * @param world The world
      * @see #getPlotAreaByString(String) to get the PlotArea object
      * @return if a plot world is registered
      */
@@ -1285,7 +1281,7 @@ public class PS {
 
     /**
      * Get the plots for a UUID
-     * @param uuid
+     * @param uuid The {@link UUID}
      * @return Set of Plot
      */
     public Set<Plot> getPlots(final UUID uuid) {
@@ -1316,7 +1312,7 @@ public class PS {
 
     /**
      * Get the plots for a UUID
-     * @param uuid
+     * @param uuid The {@link UUID}
      * @return Set of Plot
      */
     public Set<Plot> getPlotsAbs(final UUID uuid) {

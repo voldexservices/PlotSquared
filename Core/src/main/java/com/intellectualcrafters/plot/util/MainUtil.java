@@ -215,16 +215,16 @@ public class MainUtil {
     
     /**
      * Get the name from a UUID<br>
-     * @param owner
+     * @param uuid The {@code UUID}
      * @return The player's name, None, Everyone or Unknown 
      */
-    public static String getName(final UUID owner) {
-        if (owner == null) {
+    public static String getName(final UUID uuid) {
+        if (uuid == null) {
             return C.NONE.s();
-        } else if (owner.equals(DBFunc.everyone)) {
+        } else if (uuid.equals(DBFunc.everyone)) {
             return C.EVERYONE.s();
         }
-        final String name = UUIDHandler.getName(owner);
+        final String name = UUIDHandler.getName(uuid);
         if (name == null) {
             return C.UNKNOWN.s();
         }
@@ -773,7 +773,7 @@ public class MainUtil {
      */
     public static String getPlayerList(final Collection<UUID> uuids) {
         final ArrayList<UUID> l = new ArrayList<>(uuids);
-        if (l.size() < 1) {
+        if (l.isEmpty()) {
             return C.NONE.s();
         }
         final String c = C.PLOT_USER_LIST.s();

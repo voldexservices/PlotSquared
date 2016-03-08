@@ -324,7 +324,6 @@ public interface AbstractDB {
      * Get Plot Comments
      *
      * @param plot  Plot Object
-     * @return Plot Comments within the specified tier
      */
     void getComments(final Plot plot, final String inbox, final RunnableVal<List<PlotComment>> whenDone);
     

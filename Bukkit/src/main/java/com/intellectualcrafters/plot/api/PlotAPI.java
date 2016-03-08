@@ -724,7 +724,7 @@ public class PlotAPI {
      *
      * @see PlotPlayer#wrap(Object)
      *
-     * @param uuid
+     * @param uuid The {@link UUID}
      * @return
      */
     public PlotPlayer wrapPlayer(final UUID uuid) {

@@ -29,8 +29,7 @@ import java.util.List;
 /**
  * <p> This class writes <strong>NBT</strong>, or <strong>Named Binary Tag</strong> <code>Tag</code> objects to an
  * underlying <code>OutputStream</code>. </p>  <p> The NBT format was created by Markus Persson, and the
- * specification may be found at
- * @linktourl http://www.minecraft.net/docs/NBT.txt
+ * specification may be found <a href="http://www.minecraft.net/docs/NBT.txt">here</a>.
  * </p>
  *
  * @author Graham Edgecombe

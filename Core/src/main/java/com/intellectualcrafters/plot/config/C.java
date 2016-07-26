@@ -74,7 +74,7 @@ public enum C {
      * Static console
      */
     CONSOLE_JAVA_OUTDATED_1_8("&cYour version of java is outdated. It is highly recommended that you update to Java 8 as it increases performance "
-            + "and security. PlotSquared will require Java 9 in a future update.", "static.console"),
+            + "and security. PlotSquared will require Java 8 in a future update.", "static.console"),
     CONSOLE_PLEASE_ENABLE_METRICS("&dPlease enable metrics for PlotSquared. Using metrics improves plugin stability, performance, and features. "
             + "Bug fixes and new features are influenced on metrics.", "static.console"),
     /*

@@ -126,7 +126,10 @@ public interface IPlotMain extends ILogger {
 
     /**
      * Register force field events.
+     *
+     * @deprecated not used internally, will be removed
      */
+    @Deprecated
     void registerForceFieldEvents();
 
     /**

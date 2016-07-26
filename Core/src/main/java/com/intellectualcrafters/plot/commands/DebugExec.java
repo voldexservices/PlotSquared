@@ -350,6 +350,9 @@ public class DebugExec extends SubCommand {
                             return false;
                     }
 
+                    if (filesArray == null) {
+                        return false;
+                    }
                     List<File> allFiles = Arrays.asList(filesArray);
                     paginate(player, allFiles, 8, page, new RunnableVal3<Integer, File, PlotMessage>() {
 

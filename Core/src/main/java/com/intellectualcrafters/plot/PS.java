@@ -295,6 +295,8 @@ public class PS {
 
             // Copy files
             copyFile("automerge.js", Settings.Paths.SCRIPTS);
+            copyFile("addsigns.js", Settings.Paths.SCRIPTS);
+            copyFile("sbetiomes.js", Settings.Paths.SCRIPTS);
             copyFile("town.template", Settings.Paths.TEMPLATES);
             copyFile("skyblock.template", Settings.Paths.TEMPLATES);
             copyFile("german.yml", Settings.Paths.TRANSLATIONS);

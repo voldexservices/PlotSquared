@@ -18,6 +18,7 @@ import com.intellectualcrafters.plot.util.block.LocalBlockQueue;
 import com.plotsquared.bukkit.object.schematic.StateWrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -150,112 +151,111 @@ public class BukkitSchematicHandler extends SchematicHandler {
                                                 int rx = x - bx;
                                                 int index = i2 + rx;
                                                 Block block = worldObj.getBlockAt(x, y, z);
-                                                int id = block.getTypeId();
+                                                Material id = block.getType();
                                                 switch (id) {
-                                                    case 0:
-                                                    case 2:
-                                                    case 4:
-                                                    case 13:
-                                                    case 14:
-                                                    case 15:
-                                                    case 20:
-                                                    case 21:
-                                                    case 22:
-                                                    case 24:
-                                                    case 30:
-                                                    case 32:
-                                                    case 37:
-                                                    case 39:
-                                                    case 40:
-                                                    case 41:
-                                                    case 42:
-                                                    case 45:
-                                                    case 46:
-                                                    case 47:
-                                                    case 48:
-                                                    case 49:
-                                                    case 51:
-                                                    case 55:
-                                                    case 56:
-                                                    case 57:
-                                                    case 58:
-                                                    case 60:
-                                                    case 7:
-                                                    case 8:
-                                                    case 9:
-                                                    case 10:
-                                                    case 11:
-                                                    case 73:
-                                                    case 74:
-                                                    case 78:
-                                                    case 79:
-                                                    case 80:
-                                                    case 81:
-                                                    case 82:
-                                                    case 83:
-                                                    case 85:
-                                                    case 87:
-                                                    case 88:
-                                                    case 101:
-                                                    case 102:
-                                                    case 103:
-                                                    case 110:
-                                                    case 112:
-                                                    case 113:
-                                                    case 121:
-                                                    case 122:
-                                                    case 129:
-                                                    case 133:
-                                                    case 165:
-                                                    case 166:
-                                                    case 169:
-                                                    case 170:
-                                                    case 172:
-                                                    case 173:
-                                                    case 174:
-                                                    case 181:
-                                                    case 182:
-                                                    case 188:
-                                                    case 189:
-                                                    case 190:
-                                                    case 191:
-                                                    case 192:
+                                                    case AIR:
+                                                    case GRASS:
+                                                    case COBBLESTONE:
+                                                    case GRAVEL:
+                                                    case GOLD_ORE:
+                                                    case IRON_ORE:
+                                                    case GLASS:
+                                                    case LAPIS_ORE:
+                                                    case LAPIS_BLOCK:
+                                                    case SANDSTONE:
+                                                    case WEB:
+                                                    case DEAD_BUSH:
+                                                    case YELLOW_FLOWER:
+                                                    case BROWN_MUSHROOM:
+                                                    case RED_MUSHROOM:
+                                                    case GOLD_BLOCK:
+                                                    case IRON_BLOCK:
+                                                    case BRICK:
+                                                    case TNT:
+                                                    case BOOKSHELF:
+                                                    case MOSSY_COBBLESTONE:
+                                                    case OBSIDIAN:
+                                                    case FIRE:
+                                                    case REDSTONE_WIRE:
+                                                    case DIAMOND_ORE:
+                                                    case DIAMOND_BLOCK:
+                                                    case WORKBENCH:
+                                                    case SOIL:
+                                                    case BEDROCK:
+                                                    case WATER:
+                                                    case STATIONARY_WATER:
+                                                    case LAVA:
+                                                    case STATIONARY_LAVA:
+                                                    case REDSTONE_ORE:
+                                                    case GLOWING_REDSTONE_ORE:
+                                                    case SNOW:
+                                                    case ICE:
+                                                    case SNOW_BLOCK:
+                                                    case CACTUS:
+                                                    case CLAY:
+                                                    case SUGAR_CANE:
+                                                    case FENCE:
+                                                    case NETHERRACK:
+                                                    case SOUL_SAND:
+                                                    case IRON_FENCE:
+                                                    case THIN_GLASS:
+                                                    case MELON_BLOCK:
+                                                    case MYCEL:
+                                                    case NETHER_BRICK:
+                                                    case NETHER_FENCE:
+                                                    case ENDER_STONE:
+                                                    case DRAGON_EGG:
+                                                    case EMERALD_ORE:
+                                                    case EMERALD_BLOCK:
+                                                    case SLIME_BLOCK:
+                                                    case BARRIER:
+                                                    case SEA_LANTERN:
+                                                    case HAY_BLOCK:
+                                                    case HARD_CLAY:
+                                                    case COAL_BLOCK:
+                                                    case PACKED_ICE:
+                                                    case DOUBLE_STONE_SLAB2:
+                                                    case STONE_SLAB2:
+                                                    case SPRUCE_FENCE:
+                                                    case BIRCH_FENCE:
+                                                    case JUNGLE_FENCE:
+                                                    case DARK_OAK_FENCE:
+                                                    case ACACIA_FENCE:
                                                         break;
-                                                    case 54:
-                                                    case 130:
-                                                    case 142:
-                                                    case 27:
-                                                    case 137:
-                                                    case 52:
-                                                    case 154:
-                                                    case 84:
-                                                    case 25:
-                                                    case 144:
-                                                    case 138:
-                                                    case 176:
-                                                    case 177:
-                                                    case 63:
-                                                    case 68:
-                                                    case 323:
-                                                    case 117:
-                                                    case 116:
-                                                    case 28:
-                                                    case 66:
-                                                    case 157:
-                                                    case 61:
-                                                    case 62:
-                                                    case 140:
-                                                    case 146:
-                                                    case 149:
-                                                    case 150:
-                                                    case 158:
-                                                    case 23:
-                                                    case 123:
-                                                    case 124:
-                                                    case 29:
-                                                    case 33:
-                                                    case 151:
-                                                    case 178:
+                                                    case CHEST:
+                                                    case ENDER_CHEST:
+                                                    case POTATO:
+                                                    case POWERED_RAIL:
+                                                    case COMMAND:
+                                                    case MOB_SPAWNER:
+                                                    case HOPPER:
+                                                    case JUKEBOX:
+                                                    case NOTE_BLOCK:
+                                                    case SKULL:
+                                                    case BEACON:
+                                                    case STANDING_BANNER:
+                                                    case WALL_BANNER:
+                                                    case SIGN_POST:
+                                                    case WALL_SIGN:
+                                                    case ENCHANTMENT_TABLE:
+                                                    case BREWING_STAND:
+                                                    case DETECTOR_RAIL:
+                                                    case RAILS:
+                                                    case ACTIVATOR_RAIL:
+                                                    case FURNACE:
+                                                    case BURNING_FURNACE:
+                                                    case FLOWER_POT:
+                                                    case TRAPPED_CHEST:
+                                                    case REDSTONE_COMPARATOR_OFF:
+                                                    case REDSTONE_COMPARATOR_ON:
+                                                    case DROPPER:
+                                                    case DISPENSER:
+                                                    case REDSTONE_LAMP_OFF:
+                                                    case REDSTONE_LAMP_ON:
+                                                    case PISTON_STICKY_BASE:
+                                                    case PISTON_BASE:
+                                                    case DAYLIGHT_DETECTOR:
+                                                    case DAYLIGHT_DETECTOR_INVERTED:
                                                         // TODO implement fully
                                                         BlockState state = block.getState();
                                                         if (state != null) {
@@ -285,7 +285,7 @@ public class BukkitSchematicHandler extends SchematicHandler {
                                                 // (addBlocks[index >> 1] & 0xF0) | ((type >> 8) & 0xF) : (addBlocks[index >> 1] & 0xF) | (((type
                                                 // >> 8) & 0xF) << 4));
                                                 //                                        }
-                                                blocks[index] = (byte) id;
+                                                blocks[index] = (byte) id.getId();
                                             }
                                         }
                                     }

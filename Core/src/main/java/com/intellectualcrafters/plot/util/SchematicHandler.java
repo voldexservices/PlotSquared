@@ -54,10 +54,7 @@ public abstract class SchematicHandler {
     private boolean exportAll = false;
 
     public boolean exportAll(Collection<Plot> collection, final File outputDir, final String namingScheme, final Runnable ifSuccess) {
-        if (this.exportAll) {
-            return false;
-        }
-        if (collection.isEmpty()) {
+        if (this.exportAll || collection.isEmpty()) {
             return false;
         }
         this.exportAll = true;
@@ -148,16 +145,18 @@ public abstract class SchematicHandler {
                     return;
                 }
                 try {
-                    // Set flags
+                    /* Set flags
+                    //TODO Fix this. It broke when the flag system was replaced.
                     if (plot.hasOwner()) {
                         Map<String, Tag> flags = schematic.getFlags();
                         if (!flags.isEmpty()) {
                             for (Map.Entry<String, Tag> entry : flags.entrySet()) {
-                                //plot.setFlag(entry.getKey(), StringTag.class.cast(entry.getValue()).getValue());
+                                plot.setFlag(entry.getKey(), StringTag.class.cast(entry.getValue()).getValue());
                             }
 
                         }
                     }
+                    */
                     final LocalBlockQueue queue = plot.getArea().getQueue(false);
                     Dimension dimension = schematic.getSchematicDimension();
                     final int WIDTH = dimension.getX();
@@ -400,7 +399,7 @@ public abstract class SchematicHandler {
         //        Schematic schem = new Schematic(collection, dimension, file);
 
         Dimension dimensions = new Dimension(width, height, length);
-        Schematic schem = new Schematic(block, data, dimensions, flags);
+        Schematic schematic = new Schematic(block, data, dimensions, flags);
         // Slow
         try {
             List<Tag> blockStates = ListTag.class.cast(tagMap.get("TileEntities")).getValue();
@@ -411,7 +410,7 @@ public abstract class SchematicHandler {
                     short x = IntTag.class.cast(state.get("x")).getValue().shortValue();
                     short y = IntTag.class.cast(state.get("y")).getValue().shortValue();
                     short z = IntTag.class.cast(state.get("z")).getValue().shortValue();
-                    schem.addTile(new BlockLoc(x, y, z), ct);
+                    schematic.addTile(new BlockLoc(x, y, z), ct);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -419,7 +418,7 @@ public abstract class SchematicHandler {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return schem;
+        return schematic;
     }
 
     public abstract boolean restoreTile(LocalBlockQueue queue, CompoundTag tag, int x, int y, int z);
@@ -497,12 +496,12 @@ public abstract class SchematicHandler {
             URL url = new URL(website);
             URLConnection connection = new URL(url.toString()).openConnection();
             connection.setRequestProperty("User-Agent", "Mozilla/5.0");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                rawJSON.append(line);
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    rawJSON.append(line);
+                }
             }
-            reader.close();
             JSONArray array = new JSONArray(rawJSON.toString());
             List<String> schematics = new ArrayList<>();
             for (int i = 0; i < array.length(); i++) {
@@ -558,11 +557,8 @@ public abstract class SchematicHandler {
             try (OutputStream stream = new FileOutputStream(tmp); NBTOutputStream output = new NBTOutputStream(new GZIPOutputStream(stream))) {
                 output.writeTag(tag);
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
         }
         return true;
     }
@@ -657,10 +653,10 @@ public abstract class SchematicHandler {
         private Map<String, Tag> flags;
         private HashMap<BlockLoc, CompoundTag> tiles;
 
-        public Schematic(short[] i, byte[] b, Dimension d, Map<String, Tag> flags) {
+        public Schematic(short[] i, byte[] b, Dimension dimension, Map<String, Tag> flags) {
             this.ids = i;
             this.datas = b;
-            this.schematicDimension = d;
+            this.schematicDimension = dimension;
             setFlags(flags);
         }
 

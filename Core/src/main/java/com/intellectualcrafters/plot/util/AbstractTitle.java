@@ -1,5 +1,6 @@
 package com.intellectualcrafters.plot.util;
 
+import com.intellectualcrafters.plot.config.Settings;
 import com.intellectualcrafters.plot.object.ConsolePlayer;
 import com.intellectualcrafters.plot.object.PlotPlayer;
 
@@ -11,7 +12,7 @@ public abstract class AbstractTitle {
             return;
         }
         if (TITLE_CLASS != null && !player.getAttribute("disabletitles")) {
-            TITLE_CLASS.sendTitle(player, head, sub, 1, 2, 1);
+            TITLE_CLASS.sendTitle(player, head, sub, Settings.Titles.FADE_IN, Settings.Titles.STAY, Settings.Titles.FADE_OUT);
         }
     }
 

@@ -270,6 +270,12 @@ public class Settings extends Config {
         public static List<String> CATEGORIES = new ArrayList<>();
     }
 
+    public static final class Titles {
+        public static int FADE_IN = 1;
+        public static int STAY = 2;
+        public static int FADE_OUT = 1;
+    }
+
     @Comment({"Enable or disable part of the plugin","Note: A cache will use some memory if enabled"})
     public static final class Enabled_Components { // Group the following values into a new config section
         @Comment("The database stores all the plots")

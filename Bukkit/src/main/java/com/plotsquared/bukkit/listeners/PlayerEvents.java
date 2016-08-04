@@ -466,35 +466,46 @@ public class PlayerEvents extends PlotListener implements Listener {
         EventUtil.manager.doRespawnTask(pp);
     }
 
+    private boolean compareLocations(org.bukkit.Location l1, org.bukkit.Location l2) {
+        return l1.getBlockX() == l2.getBlockX() && l1.getBlockZ() == l2.getBlockZ();
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void playerMove(PlayerMoveEvent event) {
         org.bukkit.Location from = event.getFrom();
         org.bukkit.Location to = event.getTo();
-        int x2;
-        if (MathMan.roundInt(from.getX()) != (x2 = MathMan.roundInt(to.getX()))) {
+
+        if (!compareLocations(from, to)) {
             Player player = event.getPlayer();
             PlotPlayer pp = BukkitUtil.getPlayer(player);
-            // Cancel teleport
+
             TaskManager.TELEPORT_QUEUE.remove(pp.getName());
-            // Set last location
+
             Location loc = BukkitUtil.getLocation(to);
             pp.setMeta("location", loc);
+
             PlotArea area = loc.getPlotArea();
             if (area == null) {
                 pp.deleteMeta("lastplot");
                 return;
             }
+
             Plot now = area.getPlotAbs(loc);
             Plot lastPlot = pp.getMeta("lastplot");
+
             if (now == null) {
                 if (lastPlot != null && !plotExit(pp, lastPlot)) {
-                    MainUtil.sendMessage(pp, C.NO_PERMISSION_EVENT, C.PERMISSION_ADMIN_EXIT_DENIED);
+                    MainUtil.sendMessage(pp, C.NO_PERMISSION_EVENT, pp.getMeta("exit_failure", C.PERMISSION_ADMIN_EXIT_DENIED.s()));
+                    int xDiff = to.getBlockX() - from.getBlockX();
+                    int zDiff = to.getBlockZ() - from.getBlockZ();
+                    from.subtract(xDiff, 0, zDiff);
                     if (lastPlot.equals(BukkitUtil.getLocation(from).getPlot())) {
                         player.teleport(from);
                     } else {
                         player.teleport(player.getWorld().getSpawnLocation());
                     }
                     event.setCancelled(true);
+                    pp.deleteMeta("exit_failure");
                     return;
                 }
             } else if (now.equals(lastPlot)) {
@@ -506,66 +517,26 @@ public class PlayerEvents extends PlotListener implements Listener {
                 event.setCancelled(true);
                 return;
             }
-            Integer border = area.getBorder();
-            if (x2 > border) {
+            int border = area.getBorder();
+            if (to.getBlockX() > border) {
                 to.setX(border - 4);
                 player.teleport(event.getTo());
                 MainUtil.sendMessage(pp, C.BORDER);
                 return;
             }
-            if (x2 < -border) {
+            if (to.getBlockX() < -border) {
                 to.setX(-border + 4);
                 player.teleport(event.getTo());
                 MainUtil.sendMessage(pp, C.BORDER);
                 return;
             }
-            return;
-        }
-        int z2;
-        if (MathMan.roundInt(from.getZ()) != (z2 = MathMan.roundInt(to.getZ()))) {
-            Player player = event.getPlayer();
-            PlotPlayer pp = BukkitUtil.getPlayer(player);
-            // Cancel teleport
-            TaskManager.TELEPORT_QUEUE.remove(pp.getName());
-            // Set last location
-            Location loc = BukkitUtil.getLocation(to);
-            pp.setMeta("location", loc);
-            PlotArea area = loc.getPlotArea();
-            if (area == null) {
-                pp.deleteMeta("lastplot");
-                return;
-            }
-            Plot now = area.getPlot(loc);
-            Plot lastPlot = pp.getMeta("lastplot");
-            if (now == null) {
-                if (lastPlot != null && !plotExit(pp, lastPlot)) {
-                    MainUtil.sendMessage(pp, C.NO_PERMISSION_EVENT, C.PERMISSION_ADMIN_EXIT_DENIED);
-                    if (lastPlot.equals(BukkitUtil.getLocation(from).getPlot())) {
-                        player.teleport(from);
-                    } else {
-                        player.teleport(player.getWorld().getSpawnLocation());
-                    }
-                    event.setCancelled(true);
-                    return;
-                }
-            } else if (now.equals(lastPlot)) {
-                ForceFieldListener.handleForcefield(player, pp, now);
-                return;
-            } else if (!plotEntry(pp, now)) {
-                MainUtil.sendMessage(pp, C.NO_PERMISSION_EVENT, C.PERMISSION_ADMIN_ENTRY_DENIED);
-                player.teleport(from);
-                event.setCancelled(true);
-                return;
-            }
-            Integer border = area.getBorder();
-            if (z2 > border) {
+            if (to.getBlockZ() > border) {
                 to.setZ(border - 4);
                 player.teleport(event.getTo());
                 MainUtil.sendMessage(pp, C.BORDER);
-            } else if (z2 < -border) {
+            } else if (to.getBlockZ() < -border) {
                 to.setZ(-border + 4);
                 player.teleport(event.getTo());
-                MainUtil.sendMessage(pp, C.BORDER);
             }
         }
     }
@@ -1653,7 +1624,7 @@ public class PlayerEvents extends PlotListener implements Listener {
             Plot lastPlot = pp.getMeta("lastplot");
             if (now == null) {
                 if (lastPlot != null && !plotExit(pp, lastPlot) && this.tmpTeleport) {
-                    MainUtil.sendMessage(pp, C.NO_PERMISSION_EVENT, C.PERMISSION_ADMIN_EXIT_DENIED);
+                    MainUtil.sendMessage(pp, C.NO_PERMISSION_EVENT, pp.getMeta("exit_failure", C.PERMISSION_ADMIN_EXIT_DENIED.s()));
                     if (lastPlot.equals(area.getPlot(BukkitUtil.getLocation(from)))) {
                         this.tmpTeleport = false;
                         player.teleport(from);
@@ -1667,6 +1638,7 @@ public class PlayerEvents extends PlotListener implements Listener {
                         }
                     }
                     event.setCancelled(true);
+                    pp.deleteMeta("exit_failure");
                     return;
                 }
             } else if (lastPlot != null && now.equals(lastPlot)) {
@@ -1726,7 +1698,7 @@ public class PlayerEvents extends PlotListener implements Listener {
             Plot lastPlot = pp.getMeta("lastplot");
             if (now == null) {
                 if (lastPlot != null && !plotExit(pp, lastPlot) && this.tmpTeleport) {
-                    MainUtil.sendMessage(pp, C.NO_PERMISSION_EVENT, C.PERMISSION_ADMIN_EXIT_DENIED);
+                    MainUtil.sendMessage(pp, C.NO_PERMISSION_EVENT, pp.getMeta("exit_failure", C.PERMISSION_ADMIN_EXIT_DENIED.s()));
                     if (lastPlot.equals(area.getPlot(BukkitUtil.getLocation(from)))) {
                         this.tmpTeleport = false;
                         player.teleport(from);
@@ -1740,6 +1712,7 @@ public class PlayerEvents extends PlotListener implements Listener {
                         }
                     }
                     event.setCancelled(true);
+                    pp.deleteMeta("exit_failure");
                     return;
                 }
             } else if (lastPlot != null && now.equals(lastPlot)) {

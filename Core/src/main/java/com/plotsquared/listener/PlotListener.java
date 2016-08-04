@@ -37,7 +37,6 @@ public class PlotListener {
             Map<Flag<?>, Object> flags = FlagManager.getPlotFlags(plot);
             boolean titles = Settings.TITLES;
             final String greeting;
-
             if (flags.isEmpty()) {
                 if (titles) {
                     greeting = "";
@@ -181,6 +180,15 @@ public class PlotListener {
             PlotArea pw = plot.getArea();
             if (pw == null) {
                 return true;
+            }
+            Optional<Boolean> preventExit = plot.getFlag(Flags.PREVENT_EXIT);
+            if (preventExit.isPresent()) {
+                if (preventExit.get()) {
+                    if (!Permissions.hasPermission(player, C.PERMISSION_ADMIN_EXIT)) {
+                        player.setMeta("exit_failure", C.PERMISSION_ADMIN_EXIT.s());
+                        return false;
+                    }
+                }
             }
             if (plot.getFlag(Flags.GAMEMODE).isPresent() || plot.getFlag(Flags.GUEST_GAMEMODE).isPresent()) {
                 if (player.getGameMode() != pw.GAMEMODE) {

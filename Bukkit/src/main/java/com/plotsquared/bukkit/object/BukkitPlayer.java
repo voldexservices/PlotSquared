@@ -16,9 +16,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventException;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.plugin.RegisteredListener;
 
 import java.util.UUID;
-import org.bukkit.plugin.RegisteredListener;
 
 public class BukkitPlayer extends PlotPlayer {
     
@@ -109,7 +109,7 @@ public class BukkitPlayer extends PlotPlayer {
 
     @Override
     public void sendMessage(String message) {
-        if (!StringMan.isEqual(this.<String>getMeta("lastMessage"), message) || (System.currentTimeMillis() - this.<Long>getMeta("lastMessageTime") > 5000)) {
+        if (!StringMan.isEqual(this.getMeta("lastMessage"), message) || (System.currentTimeMillis() - this.<Long>getMeta("lastMessageTime") > 5000)) {
             setMeta("lastMessage", message);
             setMeta("lastMessageTime", System.currentTimeMillis());
             this.player.sendMessage(message);

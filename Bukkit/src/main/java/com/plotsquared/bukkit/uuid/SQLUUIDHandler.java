@@ -12,6 +12,11 @@ import com.intellectualcrafters.plot.util.TaskManager;
 import com.intellectualcrafters.plot.util.UUIDHandler;
 import com.intellectualcrafters.plot.util.UUIDHandlerImplementation;
 import com.intellectualcrafters.plot.uuid.UUIDWrapper;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -26,10 +31,6 @@ import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.UUID;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 public class SQLUUIDHandler extends UUIDHandlerImplementation {
 
@@ -155,34 +156,31 @@ public class SQLUUIDHandler extends UUIDHandlerImplementation {
         if (ifFetch == null) {
             return;
         }
-        TaskManager.runTaskAsync(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    URL url = new URL(SQLUUIDHandler.this.PROFILE_URL);
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    connection.setRequestMethod("POST");
-                    connection.setRequestProperty("Content-Type", "application/json");
-                    connection.setUseCaches(false);
-                    connection.setDoInput(true);
-                    connection.setDoOutput(true);
-                    String body = JSONArray.toJSONString(Collections.singletonList(name));
-                    OutputStream stream = connection.getOutputStream();
-                    stream.write(body.getBytes());
-                    stream.flush();
-                    stream.close();
-                    JSONArray array = (JSONArray) SQLUUIDHandler.this.jsonParser.parse(new InputStreamReader(connection.getInputStream()));
-                    JSONObject jsonProfile = (JSONObject) array.get(0);
-                    String id = (String) jsonProfile.get("id");
-                    String name = (String) jsonProfile.get("name");
-                    ifFetch.value = UUID.fromString(
-                            id.substring(0, 8) + '-' + id.substring(8, 12) + '-' + id.substring(12, 16) + '-' + id.substring(16, 20) + '-' + id
-                                    .substring(20, 32));
-                } catch (IOException | ParseException e) {
-                    e.printStackTrace();
-                }
-                TaskManager.runTask(ifFetch);
+        TaskManager.runTaskAsync(() -> {
+            try {
+                URL url = new URL(SQLUUIDHandler.this.PROFILE_URL);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Content-Type", "application/json");
+                connection.setUseCaches(false);
+                connection.setDoInput(true);
+                connection.setDoOutput(true);
+                String body = JSONArray.toJSONString(Collections.singletonList(name));
+                OutputStream stream = connection.getOutputStream();
+                stream.write(body.getBytes());
+                stream.flush();
+                stream.close();
+                JSONArray array = (JSONArray) SQLUUIDHandler.this.jsonParser.parse(new InputStreamReader(connection.getInputStream()));
+                JSONObject jsonProfile = (JSONObject) array.get(0);
+                String id = (String) jsonProfile.get("id");
+                String name1 = (String) jsonProfile.get("name");
+                ifFetch.value = UUID.fromString(
+                        id.substring(0, 8) + '-' + id.substring(8, 12) + '-' + id.substring(12, 16) + '-' + id.substring(16, 20) + '-' + id
+                                .substring(20, 32));
+            } catch (IOException | ParseException e) {
+                e.printStackTrace();
             }
+            TaskManager.runTask(ifFetch);
         });
     }
 
@@ -200,17 +198,14 @@ public class SQLUUIDHandler extends UUIDHandlerImplementation {
     public boolean add(final StringWrapper name, final UUID uuid) {
         // Ignoring duplicates
         if (super.add(name, uuid)) {
-            TaskManager.runTaskAsync(new Runnable() {
-                @Override
-                public void run() {
-                    try (PreparedStatement statement = getConnection().prepareStatement("REPLACE INTO usercache (`uuid`, `username`) VALUES(?, ?)")) {
-                        statement.setString(1, uuid.toString());
-                        statement.setString(2, name.toString());
-                        statement.execute();
-                        PS.debug(C.PREFIX + "&cAdded '&6" + uuid + "&c' - '&6" + name + "&c'");
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
+            TaskManager.runTaskAsync(() -> {
+                try (PreparedStatement statement = getConnection().prepareStatement("REPLACE INTO usercache (`uuid`, `username`) VALUES(?, ?)")) {
+                    statement.setString(1, uuid.toString());
+                    statement.setString(2, name.toString());
+                    statement.execute();
+                    PS.debug(C.PREFIX + "&cAdded '&6" + uuid + "&c' - '&6" + name + "&c'");
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
             });
             return true;
@@ -224,17 +219,14 @@ public class SQLUUIDHandler extends UUIDHandlerImplementation {
     @Override
     public void rename(final UUID uuid, final StringWrapper name) {
         super.rename(uuid, name);
-        TaskManager.runTaskAsync(new Runnable() {
-            @Override
-            public void run() {
-                try (PreparedStatement statement = getConnection().prepareStatement("UPDATE usercache SET `username`=? WHERE `uuid`=?")) {
-                    statement.setString(1, name.value);
-                    statement.setString(2, uuid.toString());
-                    statement.execute();
-                    PS.debug(C.PREFIX + "Name change for '" + uuid + "' to '" + name.value + '\'');
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+        TaskManager.runTaskAsync(() -> {
+            try (PreparedStatement statement = getConnection().prepareStatement("UPDATE usercache SET `username`=? WHERE `uuid`=?")) {
+                statement.setString(1, name.value);
+                statement.setString(2, uuid.toString());
+                statement.execute();
+                PS.debug(C.PREFIX + "Name change for '" + uuid + "' to '" + name.value + '\'');
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         });
     }

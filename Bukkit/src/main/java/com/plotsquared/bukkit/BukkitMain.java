@@ -16,7 +16,21 @@ import com.intellectualcrafters.plot.object.PlotPlayer;
 import com.intellectualcrafters.plot.object.RunnableVal;
 import com.intellectualcrafters.plot.object.SetupObject;
 import com.intellectualcrafters.plot.object.chat.PlainChatManager;
-import com.intellectualcrafters.plot.util.*;
+import com.intellectualcrafters.plot.util.AbstractTitle;
+import com.intellectualcrafters.plot.util.ChatManager;
+import com.intellectualcrafters.plot.util.ChunkManager;
+import com.intellectualcrafters.plot.util.ConsoleColors;
+import com.intellectualcrafters.plot.util.EconHandler;
+import com.intellectualcrafters.plot.util.EventUtil;
+import com.intellectualcrafters.plot.util.InventoryUtil;
+import com.intellectualcrafters.plot.util.MainUtil;
+import com.intellectualcrafters.plot.util.SchematicHandler;
+import com.intellectualcrafters.plot.util.SetupUtils;
+import com.intellectualcrafters.plot.util.StringMan;
+import com.intellectualcrafters.plot.util.TaskManager;
+import com.intellectualcrafters.plot.util.UUIDHandler;
+import com.intellectualcrafters.plot.util.UUIDHandlerImplementation;
+import com.intellectualcrafters.plot.util.WorldUtil;
 import com.intellectualcrafters.plot.util.block.QueueProvider;
 import com.intellectualcrafters.plot.uuid.UUIDWrapper;
 import com.plotsquared.bukkit.database.plotme.ClassicPlotMeConnector;
@@ -32,7 +46,21 @@ import com.plotsquared.bukkit.listeners.PlayerEvents_1_9;
 import com.plotsquared.bukkit.listeners.PlotPlusListener;
 import com.plotsquared.bukkit.listeners.WorldEvents;
 import com.plotsquared.bukkit.titles.DefaultTitle_111;
-import com.plotsquared.bukkit.util.*;
+import com.plotsquared.bukkit.util.BukkitChatManager;
+import com.plotsquared.bukkit.util.BukkitChunkManager;
+import com.plotsquared.bukkit.util.BukkitCommand;
+import com.plotsquared.bukkit.util.BukkitEconHandler;
+import com.plotsquared.bukkit.util.BukkitEventUtil;
+import com.plotsquared.bukkit.util.BukkitHybridUtils;
+import com.plotsquared.bukkit.util.BukkitInventoryUtil;
+import com.plotsquared.bukkit.util.BukkitSchematicHandler;
+import com.plotsquared.bukkit.util.BukkitSetupUtils;
+import com.plotsquared.bukkit.util.BukkitTaskManager;
+import com.plotsquared.bukkit.util.BukkitUtil;
+import com.plotsquared.bukkit.util.BukkitVersion;
+import com.plotsquared.bukkit.util.Metrics;
+import com.plotsquared.bukkit.util.SendChunk;
+import com.plotsquared.bukkit.util.SetGenCB;
 import com.plotsquared.bukkit.util.block.BukkitLocalQueue;
 import com.plotsquared.bukkit.util.block.BukkitLocalQueue_1_7;
 import com.plotsquared.bukkit.util.block.BukkitLocalQueue_1_8;
@@ -44,15 +72,6 @@ import com.plotsquared.bukkit.uuid.LowerOfflineUUIDWrapper;
 import com.plotsquared.bukkit.uuid.OfflineUUIDWrapper;
 import com.plotsquared.bukkit.uuid.SQLUUIDHandler;
 import com.sk89q.worldedit.WorldEdit;
-import java.io.File;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -69,6 +88,16 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
 public final class BukkitMain extends JavaPlugin implements Listener, IPlotMain {
 
     private static ConcurrentHashMap<String, Plugin> pluginMap;
@@ -84,12 +113,7 @@ public final class BukkitMain extends JavaPlugin implements Listener, IPlotMain 
                 pluginsField.setAccessible(true);
                 lookupNamesField.setAccessible(true);
                 List<Plugin> plugins = (List<Plugin>) pluginsField.get(manager);
-                Iterator<Plugin> iter = plugins.iterator();
-                while (iter.hasNext()) {
-                    if (iter.next().getName().startsWith("PlotMe")) {
-                        iter.remove();
-                    }
-                }
+                plugins.removeIf(plugin -> plugin.getName().startsWith("PlotMe"));
                 Map<String, Plugin> lookupNames = (Map<String, Plugin>) lookupNamesField.get(manager);
                 lookupNames.remove("PlotMe");
                 lookupNames.remove("PlotMe-DefaultGenerator");

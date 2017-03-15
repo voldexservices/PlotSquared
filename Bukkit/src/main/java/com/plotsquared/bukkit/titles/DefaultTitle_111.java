@@ -20,7 +20,7 @@ public class DefaultTitle_111 extends AbstractTitle {
     public void sendTitle(PlotPlayer player, String head, String sub, int in, int delay, int out) {
         if (valid) {
             try {
-                final Player playerObj = ((BukkitPlayer) player).player;
+                Player playerObj = ((BukkitPlayer) player).player;
                 TitleManager_1_11 title = new TitleManager_1_11(head, sub, in, delay, out);
                 title.send(playerObj);
                 return;

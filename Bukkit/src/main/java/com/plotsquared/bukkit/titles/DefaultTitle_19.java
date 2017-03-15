@@ -14,12 +14,7 @@ public class DefaultTitle_19 extends AbstractTitle {
         try {
             final Player playerObj = ((BukkitPlayer) player).player;
             playerObj.sendTitle(head, sub);
-            TaskManager.runTaskLater(new Runnable() {
-                @Override
-                public void run() {
-                    playerObj.sendTitle("", "");
-                }
-            }, delay * 20);
+            TaskManager.runTaskLater(() -> playerObj.sendTitle("", ""), delay * 20);
         } catch (Throwable ignored) {
             AbstractTitle.TITLE_CLASS = new DefaultTitle_183();
             AbstractTitle.TITLE_CLASS.sendTitle(player, head, sub, in, delay, out);

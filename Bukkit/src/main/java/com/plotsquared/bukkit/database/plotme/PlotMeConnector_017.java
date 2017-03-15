@@ -78,7 +78,7 @@ public class PlotMeConnector_017 extends APlotMeConnector {
                 int path = PS.get().worlds.getInt("worlds." + world + ".road.width");
                 plotWidth.put(world, plot);
                 roadWidth.put(world, path);
-                merges.put(world, new HashMap<PlotId, boolean[]>());
+                merges.put(world, new HashMap<>());
             }
             if (merge) {
                 int tx = resultSet.getInt("topX");
@@ -104,7 +104,7 @@ public class PlotMeConnector_017 extends APlotMeConnector {
             }
             UUID owner = UUIDHandler.getUUID(name, null);
             if (owner == null) {
-                if (name.equals("*")) {
+                if ("*".equals(name)) {
                     owner = DBFunc.everyone;
                 } else {
                     if (checkUUID) {
@@ -174,11 +174,7 @@ public class PlotMeConnector_017 extends APlotMeConnector {
         HashMap<String, HashMap<PlotId, Plot>> processed = new HashMap<>();
 
         for (Plot plot : plots.values()) {
-            HashMap<PlotId, Plot> map = processed.get(plot.getArea().worldname);
-            if (map == null) {
-                map = new HashMap<>();
-                processed.put(plot.getArea().worldname, map);
-            }
+            HashMap<PlotId, Plot> map = processed.computeIfAbsent(plot.getArea().worldname, k -> new HashMap<>());
             map.put(plot.getId(), plot);
         }
         return processed;

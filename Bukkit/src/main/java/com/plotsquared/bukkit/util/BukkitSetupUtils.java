@@ -66,7 +66,7 @@ public class BukkitSetupUtils extends SetupUtils {
         switch (type) {
             case 2: {
                 if (object.id != null) {
-                    String areaName = object.id + "-" + object.min + "-" + object.max;
+                    String areaName = object.id + '-' + object.min + '-' + object.max;
                     String areaPath = "areas." + areaName;
                     if (!worldSection.contains(areaPath)) {
                         worldSection.createSection(areaPath);

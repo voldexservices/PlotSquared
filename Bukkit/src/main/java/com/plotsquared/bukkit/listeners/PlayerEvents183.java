@@ -38,12 +38,6 @@ public class PlayerEvents183 implements Listener {
         if (plot == null || !plot.getFlag(Flags.EXPLOSION).or(false)) {
             event.setCancelled(true);
         }
-        Iterator<Block> iterator = event.blockList().iterator();
-        while (iterator.hasNext()) {
-            Block b = iterator.next();
-            if (!plot.equals(area.getOwnedPlot(BukkitUtil.getLocation(b.getLocation())))) {
-                iterator.remove();
-            }
-        }
+        event.blockList().removeIf(b -> !plot.equals(area.getOwnedPlot(BukkitUtil.getLocation(b.getLocation()))));
     }
 }

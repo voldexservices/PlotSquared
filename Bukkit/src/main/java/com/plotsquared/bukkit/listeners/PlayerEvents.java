@@ -140,22 +140,19 @@ public class PlayerEvents extends PlotListener implements Listener {
     private boolean tmpTeleport = true;
 
     public static void sendBlockChange(final org.bukkit.Location bloc, final Material type, final byte data) {
-        TaskManager.runTaskLater(new Runnable() {
-            @Override
-            public void run() {
-                String world = bloc.getWorld().getName();
-                int x = bloc.getBlockX();
-                int z = bloc.getBlockZ();
-                int distance = Bukkit.getViewDistance() * 16;
-                for (Entry<String, PlotPlayer> entry : UUIDHandler.getPlayers().entrySet()) {
-                    PlotPlayer player = entry.getValue();
-                    Location loc = player.getLocation();
-                    if (loc.getWorld().equals(world)) {
-                        if (16 * Math.abs(loc.getX() - x) / 16 > distance || 16 * Math.abs(loc.getZ() - z) / 16 > distance) {
-                            continue;
-                        }
-                        ((BukkitPlayer) player).player.sendBlockChange(bloc, type, data);
+        TaskManager.runTaskLater(() -> {
+            String world = bloc.getWorld().getName();
+            int x = bloc.getBlockX();
+            int z = bloc.getBlockZ();
+            int distance = Bukkit.getViewDistance() * 16;
+            for (Entry<String, PlotPlayer> entry : UUIDHandler.getPlayers().entrySet()) {
+                PlotPlayer player = entry.getValue();
+                Location loc = player.getLocation();
+                if (loc.getWorld().equals(world)) {
+                    if (16 * Math.abs(loc.getX() - x) / 16 > distance || 16 * Math.abs(loc.getZ() - z) / 16 > distance) {
+                        continue;
                     }
+                    ((BukkitPlayer) player).player.sendBlockChange(bloc, type, data);
                 }
             }
         }, 3);
@@ -469,14 +466,11 @@ public class PlayerEvents extends PlotListener implements Listener {
         // Delayed
 
         // Async
-        TaskManager.runTaskLaterAsync(new Runnable() {
-            @Override
-            public void run() {
-                if (!player.hasPlayedBefore() && player.isOnline()) {
-                    player.saveData();
-                }
-                EventUtil.manager.doJoinTask(pp);
+        TaskManager.runTaskLaterAsync(() -> {
+            if (!player.hasPlayedBefore() && player.isOnline()) {
+                player.saveData();
             }
+            EventUtil.manager.doJoinTask(pp);
         }, 20);
     }
 

@@ -1,5 +1,7 @@
 package com.plotsquared.bukkit.util.block;
 
+import static com.intellectualcrafters.plot.util.ReflectionUtils.getRefClass;
+
 import com.intellectualcrafters.plot.object.ChunkLoc;
 import com.intellectualcrafters.plot.object.ChunkWrapper;
 import com.intellectualcrafters.plot.object.PseudoRandom;
@@ -9,6 +11,11 @@ import com.intellectualcrafters.plot.util.ReflectionUtils;
 import com.intellectualcrafters.plot.util.TaskManager;
 import com.intellectualcrafters.plot.util.block.BasicLocalBlockQueue;
 import com.plotsquared.bukkit.util.SendChunk;
+import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
+import org.bukkit.Material;
+import org.bukkit.World;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -18,13 +25,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.Material;
-import org.bukkit.World;
-
-
-import static com.intellectualcrafters.plot.util.ReflectionUtils.getRefClass;
 
 public class BukkitLocalQueue_1_8_3 extends BukkitLocalQueue<char[]> {
 
@@ -64,25 +64,22 @@ public class BukkitLocalQueue_1_8_3 extends BukkitLocalQueue<char[]> {
         this.methodGetHandleWorld = classCraftWorld.getMethod("getHandle");
         this.methodGetWorld = classChunk.getMethod("getWorld");
         this.sendChunk = new SendChunk();
-        TaskManager.runTaskRepeat(new Runnable() {
-            @Override
-            public void run() {
-                if (BukkitLocalQueue_1_8_3.this.toUpdate.isEmpty()) {
-                    return;
-                }
-                int count = 0;
-                ArrayList<Chunk> chunks = new ArrayList<>();
-                Iterator<Map.Entry<ChunkWrapper, Chunk>> i = BukkitLocalQueue_1_8_3.this.toUpdate.entrySet().iterator();
-                while (i.hasNext() && count < 128) {
-                    chunks.add(i.next().getValue());
-                    i.remove();
-                    count++;
-                }
-                if (count == 0) {
-                    return;
-                }
-                update(chunks);
+        TaskManager.runTaskRepeat(() -> {
+            if (BukkitLocalQueue_1_8_3.this.toUpdate.isEmpty()) {
+                return;
             }
+            int count = 0;
+            ArrayList<Chunk> chunks = new ArrayList<>();
+            Iterator<Map.Entry<ChunkWrapper, Chunk>> i = BukkitLocalQueue_1_8_3.this.toUpdate.entrySet().iterator();
+            while (i.hasNext() && count < 128) {
+                chunks.add(i.next().getValue());
+                i.remove();
+                count++;
+            }
+            if (count == 0) {
+                return;
+            }
+            update(chunks);
         }, 1);
         MainUtil.initCache();
     }
@@ -291,7 +288,7 @@ public class BukkitLocalQueue_1_8_3 extends BukkitLocalQueue<char[]> {
                 Map.Entry<?, ?> tile = iterator.next();
                 Object pos = tile.getKey();
                 if (getX == null) {
-                    Class<? extends Object> clazz2 = pos.getClass().getSuperclass();
+                    Class<?> clazz2 = pos.getClass().getSuperclass();
                     getX = clazz2.getDeclaredMethod("getX");
                     getY = clazz2.getDeclaredMethod("getY");
                     getZ = clazz2.getDeclaredMethod("getZ");

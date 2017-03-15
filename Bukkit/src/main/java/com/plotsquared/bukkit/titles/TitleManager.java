@@ -188,11 +188,7 @@ public abstract class TitleManager {
     public abstract void resetTitle(Player player) throws  IllegalArgumentException, ReflectiveOperationException, SecurityException;
 
     private Class<?> getPrimitiveType(Class<?> clazz) {
-        if (CORRESPONDING_TYPES.containsKey(clazz)) {
-            return CORRESPONDING_TYPES.get(clazz);
-        } else {
-            return clazz;
-        }
+        return CORRESPONDING_TYPES.getOrDefault(clazz, clazz);
     }
 
     private Class<?>[] toPrimitiveTypeArray(Class<?>[] classes) {

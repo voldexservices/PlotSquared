@@ -46,7 +46,7 @@ public class PlayerEvents_1_8 extends PlotListener implements Listener {
         Player player = (Player) entity;
         PlayerInventory inv = player.getInventory();
         int slot = inv.getHeldItemSlot();
-        if ((slot != event.getSlot()) || (slot > 8) || !event.getEventName().equals("InventoryCreativeEvent")) {
+        if ((slot != event.getSlot()) || (slot > 8) || !"InventoryCreativeEvent".equals(event.getEventName())) {
             return;
         }
         ItemStack current = inv.getItemInHand();

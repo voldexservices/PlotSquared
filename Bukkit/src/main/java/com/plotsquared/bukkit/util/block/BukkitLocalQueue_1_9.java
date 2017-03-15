@@ -1,10 +1,16 @@
 package com.plotsquared.bukkit.util.block;
 
+import static com.intellectualcrafters.plot.util.ReflectionUtils.getRefClass;
+
 import com.intellectualcrafters.plot.object.ChunkWrapper;
 import com.intellectualcrafters.plot.object.PseudoRandom;
 import com.intellectualcrafters.plot.util.MainUtil;
 import com.intellectualcrafters.plot.util.ReflectionUtils;
 import com.intellectualcrafters.plot.util.block.BasicLocalBlockQueue;
+import org.bukkit.Chunk;
+import org.bukkit.Material;
+import org.bukkit.World;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -12,12 +18,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import org.bukkit.Chunk;
-import org.bukkit.Material;
-import org.bukkit.World;
-
-
-import static com.intellectualcrafters.plot.util.ReflectionUtils.getRefClass;
 
 public class BukkitLocalQueue_1_9 extends BukkitLocalQueue<char[]> {
 
@@ -334,7 +334,7 @@ public class BukkitLocalQueue_1_9 extends BukkitLocalQueue<char[]> {
                             int z = MainUtil.z_loc[j][k];
                             int id = n >> 4;
                             int data = n & 15;
-                            Object iBlock = this.methodGetByCombinedId.call((int) (id & 0xFFF) + (data << 12));
+                            Object iBlock = this.methodGetByCombinedId.call((id & 0xFFF) + (data << 12));
                             setType.call(x, y & 15, z, iBlock);
                     }
                 }

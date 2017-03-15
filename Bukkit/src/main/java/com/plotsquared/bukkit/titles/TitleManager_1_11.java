@@ -1,13 +1,13 @@
 package com.plotsquared.bukkit.titles;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 /**
  * Minecraft 1.8 Title
@@ -43,7 +43,7 @@ public class TitleManager_1_11 {
     private int fadeOutTime = -1;
     private boolean ticks = false;
 
-    private static final Map<Class<?>, Class<?>> CORRESPONDING_TYPES = new HashMap<Class<?>, Class<?>>();
+    private static final Map<Class<?>, Class<?>> CORRESPONDING_TYPES = new HashMap<>();
 
     public TitleManager_1_11() {
         loadClasses();
@@ -246,7 +246,7 @@ public class TitleManager_1_11 {
                     sendPacket.invoke(connection, packet);
 
                 Object serialized;
-                if (!subtitle.equals("")) {
+                if (subtitle != null && !subtitle.isEmpty()) {
                     // Send subtitle if present
                     serialized = nmsChatSerializer.getConstructor(String.class)
                             .newInstance(subtitleColor +
@@ -396,8 +396,7 @@ public class TitleManager_1_11 {
     }
 
     private Class<?> getPrimitiveType(Class<?> clazz) {
-        return CORRESPONDING_TYPES.containsKey(clazz) ? CORRESPONDING_TYPES
-                .get(clazz) : clazz;
+        return CORRESPONDING_TYPES.getOrDefault(clazz, clazz);
     }
 
     private Class<?>[] toPrimitiveTypeArray(Class<?>[] classes) {
@@ -439,7 +438,7 @@ public class TitleManager_1_11 {
 
     private String getVersion() {
         String name = Bukkit.getServer().getClass().getPackage().getName();
-        String version = name.substring(name.lastIndexOf('.') + 1) + ".";
+        String version = name.substring(name.lastIndexOf('.') + 1) + '.';
         return version;
     }
 

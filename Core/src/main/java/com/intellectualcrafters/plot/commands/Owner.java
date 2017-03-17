@@ -40,8 +40,8 @@ public class Owner extends SetCommand {
             name = UUIDHandler.getName(uuid);
             name = name == null ? value : name;
         }
-        if (uuid == null || value.equalsIgnoreCase("-")) {
-            if (value.equalsIgnoreCase("none") || value.equalsIgnoreCase("null") || value.equalsIgnoreCase("-")) {
+        if (uuid == null || "-".equalsIgnoreCase(value)) {
+            if ("none".equalsIgnoreCase(value) || "null".equalsIgnoreCase(value) || "-".equalsIgnoreCase(value)) {
                 Set<Plot> connected = plot.getConnectedPlots();
                 plot.unlinkPlot(false, false);
                 for (Plot current : connected) {
@@ -73,15 +73,12 @@ public class Owner extends SetCommand {
         }
         final String finalName = name;
         final UUID finalUUID = uuid;
-        Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                plot.setOwner(finalUUID);
-                plot.setSign(finalName);
-                MainUtil.sendMessage(player, C.SET_OWNER);
-                if (other != null) {
-                    MainUtil.sendMessage(other, C.NOW_OWNER, plot.getArea() + ";" + plot.getId());
-                }
+        Runnable run = () -> {
+            plot.setOwner(finalUUID);
+            plot.setSign(finalName);
+            MainUtil.sendMessage(player, C.SET_OWNER);
+            if (other != null) {
+                MainUtil.sendMessage(other, C.NOW_OWNER, plot.getArea() + ";" + plot.getId());
             }
         };
         if (hasConfirmation(player)) {

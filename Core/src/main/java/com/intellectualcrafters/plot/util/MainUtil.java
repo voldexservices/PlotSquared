@@ -249,7 +249,7 @@ public class MainUtil {
             return Long.parseLong(string);
         }
         string = string.toLowerCase().trim().toLowerCase();
-        if (string.equalsIgnoreCase("false")) {
+        if ("false".equalsIgnoreCase(string)) {
             return 0;
         }
         String[] split = string.split(" ");

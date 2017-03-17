@@ -17,12 +17,9 @@ public class CmdConfirm {
     public static void addPending(final PlotPlayer player, String commandStr, final Runnable runnable) {
         removePending(player);
         MainUtil.sendMessage(player, C.REQUIRES_CONFIRM, commandStr);
-        TaskManager.runTaskLater(new Runnable() {
-            @Override
-            public void run() {
-                CmdInstance cmd = new CmdInstance(runnable);
-                player.setMeta("cmdConfirm", cmd);
-            }
+        TaskManager.runTaskLater(() -> {
+            CmdInstance cmd = new CmdInstance(runnable);
+            player.setMeta("cmdConfirm", cmd);
         }, 1);
     }
 }

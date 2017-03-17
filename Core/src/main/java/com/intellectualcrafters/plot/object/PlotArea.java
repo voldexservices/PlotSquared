@@ -368,7 +368,7 @@ public abstract class PlotArea {
         if (this.id == null) {
             return this.worldname;
         } else {
-            return this.worldname + ";" + this.id;
+            return this.worldname + ';' + this.id;
         }
     }
     

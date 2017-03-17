@@ -97,23 +97,15 @@ public abstract class SchematicHandler {
                         if (value == null) {
                             MainUtil.sendMessage(null, "&7 - Skipped plot &c" + plot.getId());
                         } else {
-                            TaskManager.runTaskAsync(new Runnable() {
-                                @Override
-                                public void run() {
-                                    MainUtil.sendMessage(null, "&6ID: " + plot.getId());
-                                    boolean result = SchematicHandler.manager.save(value, directory + File.separator + name + ".schematic");
-                                    if (!result) {
-                                        MainUtil.sendMessage(null, "&7 - Failed to save &c" + plot.getId());
-                                    } else {
-                                        MainUtil.sendMessage(null, "&7 - &a  success: " + plot.getId());
-                                    }
-                                    TaskManager.runTask(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            THIS.run();
-                                        }
-                                    });
+                            TaskManager.runTaskAsync(() -> {
+                                MainUtil.sendMessage(null, "&6ID: " + plot.getId());
+                                boolean result = SchematicHandler.manager.save(value, directory + File.separator + name + ".schematic");
+                                if (!result) {
+                                    MainUtil.sendMessage(null, "&7 - Failed to save &c" + plot.getId());
+                                } else {
+                                    MainUtil.sendMessage(null, "&7 - &a  success: " + plot.getId());
                                 }
+                                TaskManager.runTask(THIS);
                             });
                         }
                     }

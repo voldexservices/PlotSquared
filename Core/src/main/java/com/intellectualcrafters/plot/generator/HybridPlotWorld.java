@@ -226,11 +226,7 @@ public class HybridPlotWorld extends ClassicPlotWorld {
                     short z = (short) (loc.z + shift + oddshift + centerShiftZ);
                     short y = (short) (loc.y + this.PLOT_HEIGHT);
                     int pair = MathMan.pair(x, z);
-                    HashMap<Integer, CompoundTag> existing = this.G_SCH_STATE.get(pair);
-                    if (existing == null) {
-                        existing = new HashMap<>();
-                        this.G_SCH_STATE.put(pair, existing);
-                    }
+                    HashMap<Integer, CompoundTag> existing = this.G_SCH_STATE.computeIfAbsent(pair, k -> new HashMap<>());
                     existing.put((int) y, entry.getValue());
                 }
             }
@@ -299,11 +295,7 @@ public class HybridPlotWorld extends ClassicPlotWorld {
             }
         }
         int pair = MathMan.pair(x, z);
-        char[] existing = this.G_SCH.get(pair);
-        if (existing == null) {
-            existing = new char[height];
-            this.G_SCH.put(pair, existing);
-        }
+        char[] existing = this.G_SCH.computeIfAbsent(pair, k -> new char[height]);
         if (id == 0) {
             data = 1;
         }

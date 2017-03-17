@@ -32,26 +32,17 @@ import java.util.Map.Entry;
 public class Database extends SubCommand {
 
     public static void insertPlots(final SQLManager manager, final List<Plot> plots, final PlotPlayer player) {
-        TaskManager.runTaskAsync(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ArrayList<Plot> ps = new ArrayList<>();
-                    for (Plot p : plots) {
-                        ps.add(p);
-                    }
-                    MainUtil.sendMessage(player, "&6Starting...");
-                    manager.createPlotsAndData(ps, new Runnable() {
-                        @Override
-                        public void run() {
-                            MainUtil.sendMessage(player, "&6Database conversion finished!");
-                            manager.close();
-                        }
-                    });
-                } catch (Exception e) {
-                    MainUtil.sendMessage(player, "Failed to insert plot objects, see stacktrace for info");
-                    e.printStackTrace();
-                }
+        TaskManager.runTaskAsync(() -> {
+            try {
+                ArrayList<Plot> ps = new ArrayList<>(plots);
+                MainUtil.sendMessage(player, "&6Starting...");
+                manager.createPlotsAndData(ps, () -> {
+                    MainUtil.sendMessage(player, "&6Database conversion finished!");
+                    manager.close();
+                });
+            } catch (Exception e) {
+                MainUtil.sendMessage(player, "Failed to insert plot objects, see stacktrace for info");
+                e.printStackTrace();
             }
         });
     }
@@ -108,20 +99,11 @@ public class Database extends SubCommand {
                                 plots.add(entry2.getValue());
                             }
                         } else {
-                            HashMap<PlotId, Plot> plotmap = PS.get().plots_tmp.get(areaname);
-                            if (plotmap == null) {
-                                plotmap = new HashMap<>();
-                                PS.get().plots_tmp.put(areaname, plotmap);
-                            }
+                            HashMap<PlotId, Plot> plotmap = PS.get().plots_tmp.computeIfAbsent(areaname, k -> new HashMap<>());
                             plotmap.putAll(entry.getValue());
                         }
                     }
-                    DBFunc.createPlotsAndData(plots, new Runnable() {
-                        @Override
-                        public void run() {
-                            MainUtil.sendMessage(player, "&6Database conversion finished!");
-                        }
-                    });
+                    DBFunc.createPlotsAndData(plots, () -> MainUtil.sendMessage(player, "&6Database conversion finished!"));
                     return true;
                 case "mysql":
                     if (args.length < 6) {

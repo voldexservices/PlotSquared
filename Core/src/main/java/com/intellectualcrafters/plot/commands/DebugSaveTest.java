@@ -20,8 +20,7 @@ public class DebugSaveTest extends SubCommand {
 
     @Override
     public boolean onCommand(final PlotPlayer player, String[] args) {
-        ArrayList<Plot> plots = new ArrayList<Plot>();
-        plots.addAll(PS.get().getPlots());
+        ArrayList<Plot> plots = new ArrayList<>(PS.get().getPlots());
         MainUtil.sendMessage(player, "&6Starting `DEBUGSAVETEST`");
         DBFunc.createPlotsAndData(plots, new Runnable() {
             @Override

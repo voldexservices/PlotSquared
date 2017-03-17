@@ -122,7 +122,7 @@ public class Config {
     public static Map<String, Object> getFields(Class clazz) {
         HashMap<String, Object> map = new HashMap<>();
         for (Field field : clazz.getFields()) {
-            if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+            if (Modifier.isStatic(field.getModifiers())) {
                 try {
                     map.put(toNodeName(field.getName()), field.get(null));
                 } catch (IllegalAccessException e) {
@@ -150,7 +150,7 @@ public class Config {
             if (stringValue.isEmpty()) {
                 return "''";
             }
-            return "\"" + stringValue + "\"";
+            return '"' + stringValue + '"';
         }
         return value != null ? value.toString() : "null";
     }
@@ -200,7 +200,7 @@ public class Config {
                         writer.write(spacing + "# " + commentLine + lineSeparator);
                     }
                 }
-                writer.write(spacing + toNodeName(current.getSimpleName()) + ":" + lineSeparator);
+                writer.write(spacing + toNodeName(current.getSimpleName()) + ':' + lineSeparator);
                 BlockName blockNames = current.getAnnotation(BlockName.class);
                 if (blockNames != null) {
                     Field instanceField = clazz.getDeclaredField(toFieldName(current.getSimpleName()));
@@ -216,7 +216,7 @@ public class Config {
                     // Save each instance
                     for (Map.Entry<String, Object> entry: ((Map<String, Object>) value.getRaw()).entrySet()) {
                         String key = entry.getKey();
-                        writer.write(spacing + "  " + toNodeName(key) + ":" + lineSeparator);
+                        writer.write(spacing + "  " + toNodeName(key) + ':' + lineSeparator);
                         save(writer, current, entry.getValue(), indent + 4);
                     }
                     continue;

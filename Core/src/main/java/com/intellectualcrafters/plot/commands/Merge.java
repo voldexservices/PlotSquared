@@ -72,7 +72,7 @@ public class Merge extends SubCommand {
             }
         }
         final PlotArea plotArea = plot.getArea();
-        Expression<Double> priceExr = plotArea.PRICES.containsKey("merge") ? plotArea.PRICES.get("merge") : null;
+        Expression<Double> priceExr = plotArea.PRICES.getOrDefault("merge", null);
         final int size = plot.getConnectedPlots().size();
         final double price = priceExr == null ? 0d : priceExr.evaluate((double) size);
         if (EconHandler.manager != null && plotArea.USE_ECONOMY && price > 0d && EconHandler.manager.getMoney(player) < price) {

@@ -110,9 +110,7 @@ public class Purge extends SubCommand {
             if (unknown && UUIDHandler.getName(plot.owner) != null) {
                 continue;
             }
-            for (Plot current : plot.getConnectedPlots()) {
-                toDelete.add(current);
-            }
+            toDelete.addAll(plot.getConnectedPlots());
         }
         if (PS.get().plots_tmp != null) {
             for (Entry<String, HashMap<PlotId, Plot>> entry : PS.get().plots_tmp.entrySet()) {

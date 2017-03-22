@@ -1,6 +1,5 @@
 package com.intellectualcrafters.plot.object;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableSet;
 import com.intellectualcrafters.jnbt.CompoundTag;
@@ -44,6 +43,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;

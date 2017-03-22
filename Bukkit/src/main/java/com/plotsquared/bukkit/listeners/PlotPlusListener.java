@@ -1,6 +1,5 @@
 package com.plotsquared.bukkit.listeners;
 
-import com.google.common.base.Optional;
 import com.intellectualcrafters.plot.flag.Flags;
 import com.intellectualcrafters.plot.object.Plot;
 import com.intellectualcrafters.plot.object.PlotPlayer;
@@ -27,6 +26,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.UUID;
 
 public class PlotPlusListener extends PlotListener implements Listener {

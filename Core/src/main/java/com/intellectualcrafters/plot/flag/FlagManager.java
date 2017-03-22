@@ -1,6 +1,5 @@
 package com.intellectualcrafters.plot.flag;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.intellectualcrafters.plot.PS;
 import com.intellectualcrafters.plot.database.DBFunc;
@@ -18,6 +17,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -33,6 +33,10 @@ public class FlagManager {
     private static final Optional MUTABLE_OPTIONAL;
     private static Field MUTABLE_OPTIONAL_FIELD;
 
+    /* TODO: This needs to be fixed/removed. Unfortunately, I can't remember why it was added in the first place.
+    If it was for the many  optional's being created, that won't really be an issue as they should be removed from
+     memory quickly. It will still need to be monitored incase this isn't correct.
+     */
     static {
         MUTABLE_OPTIONAL = Optional.of(new Object());
         try {
@@ -56,7 +60,7 @@ public class FlagManager {
             }
             return Optional.of(value);
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     /**

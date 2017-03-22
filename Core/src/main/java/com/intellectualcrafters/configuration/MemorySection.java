@@ -337,12 +337,7 @@ public class MemorySection implements ConfigurationSection {
 
         String key = path.substring(i2);
         if (section == this) {
-            Object result = this.map.get(key);
-            if (result == null) {
-                return defaultValue;
-            } else {
-                return result;
-            }
+            return this.map.getOrDefault(key, defaultValue);
         }
         return section.get(key, defaultValue);
     }

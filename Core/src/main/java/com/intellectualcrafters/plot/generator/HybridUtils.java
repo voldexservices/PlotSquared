@@ -231,81 +231,63 @@ public abstract class HybridUtils {
                     // CANCEL TASK
                 } else {
                     final Runnable task = this;
-                    TaskManager.runTaskAsync(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                if (last.get() == 0) {
-                                    last.set((int) (System.currentTimeMillis() - baseTime));
+                    TaskManager.runTaskAsync(() -> {
+                        try {
+                            if (last.get() == 0) {
+                                last.set((int) (System.currentTimeMillis() - baseTime));
+                            }
+                            if (chunks.size() < 1024) {
+                                if (!regions.isEmpty()) {
+                                    Iterator<ChunkLoc> iterator = regions.iterator();
+                                    ChunkLoc loc = iterator.next();
+                                    iterator.remove();
+                                    PS.debug("&3Updating .mcr: " + loc.x + ", " + loc.z + " (aprrox 1024 chunks)");
+                                    PS.debug(" - Remaining: " + regions.size());
+                                    chunks.addAll(getChunks(loc));
+                                    System.gc();
                                 }
-                                if (chunks.size() < 1024) {
-                                    if (!regions.isEmpty()) {
-                                        Iterator<ChunkLoc> iterator = regions.iterator();
-                                        ChunkLoc loc = iterator.next();
-                                        iterator.remove();
-                                        PS.debug("&3Updating .mcr: " + loc.x + ", " + loc.z + " (aprrox 1024 chunks)");
-                                        PS.debug(" - Remaining: " + regions.size());
-                                        chunks.addAll(getChunks(loc));
-                                        System.gc();
-                                    }
+                            }
+                            if (!chunks.isEmpty()) {
+                                long diff = System.currentTimeMillis() + 1;
+                                if (System.currentTimeMillis() - baseTime - last.get() > 2000 && last.get() != 0) {
+                                    last.set(0);
+                                    PS.debug(C.PREFIX.s() + "Detected low TPS. Rescheduling in 30s");
+                                    Iterator<ChunkLoc> iterator = chunks.iterator();
+                                    final ChunkLoc chunk = iterator.next();
+                                    iterator.remove();
+                                    TaskManager.runTask(() -> regenerateRoad(area, chunk, extend));
+                                    // DELAY TASK
+                                    TaskManager.runTaskLater(task, 600);
+                                    return;
                                 }
-                                if (!chunks.isEmpty()) {
-                                    long diff = System.currentTimeMillis() + 1;
-                                    if (System.currentTimeMillis() - baseTime - last.get() > 2000 && last.get() != 0) {
-                                        last.set(0);
-                                        PS.debug(C.PREFIX.s() + "Detected low TPS. Rescheduling in 30s");
+                                if (System.currentTimeMillis() - baseTime - last.get() < 1500 && last.get() != 0) {
+                                    while (System.currentTimeMillis() < diff && !chunks.isEmpty()) {
                                         Iterator<ChunkLoc> iterator = chunks.iterator();
                                         final ChunkLoc chunk = iterator.next();
                                         iterator.remove();
-                                        TaskManager.runTask(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                regenerateRoad(area, chunk, extend);
-                                            }
-                                        });
-                                        // DELAY TASK
-                                        TaskManager.runTaskLater(task, 600);
-                                        return;
-                                    }
-                                    if (System.currentTimeMillis() - baseTime - last.get() < 1500 && last.get() != 0) {
-                                        while (System.currentTimeMillis() < diff && !chunks.isEmpty()) {
-                                            Iterator<ChunkLoc> iterator = chunks.iterator();
-                                            final ChunkLoc chunk = iterator.next();
-                                            iterator.remove();
-                                            TaskManager.runTask(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    regenerateRoad(area, chunk, extend);
-                                                }
-                                            });
-                                        }
-                                    }
-                                    last.set((int) (System.currentTimeMillis() - baseTime));
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                Iterator<ChunkLoc> iterator = regions.iterator();
-                                ChunkLoc loc = iterator.next();
-                                iterator.remove();
-                                PS.debug("&c[ERROR]&7 Could not update '" + area.worldname + "/region/r." + loc.x + "." + loc.z
-                                        + ".mca' (Corrupt chunk?)");
-                                int sx = loc.x << 5;
-                                int sz = loc.z << 5;
-                                for (int x = sx; x < sx + 32; x++) {
-                                    for (int z = sz; z < sz + 32; z++) {
-                                        ChunkManager.manager.unloadChunk(area.worldname, new ChunkLoc(x, z), true, true);
+                                        TaskManager.runTask(() -> regenerateRoad(area, chunk, extend));
                                     }
                                 }
-                                PS.debug("&d - Potentially skipping 1024 chunks");
-                                PS.debug("&d - TODO: recommend chunkster if corrupt");
+                                last.set((int) (System.currentTimeMillis() - baseTime));
                             }
-                            GlobalBlockQueue.IMP.addTask(new Runnable() {
-                                @Override
-                                public void run() {
-                                    TaskManager.runTaskLater(task, 20);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Iterator<ChunkLoc> iterator = regions.iterator();
+                            ChunkLoc loc = iterator.next();
+                            iterator.remove();
+                            PS.debug("&c[ERROR]&7 Could not update '" + area.worldname + "/region/r." + loc.x + "." + loc.z
+                                    + ".mca' (Corrupt chunk?)");
+                            int sx = loc.x << 5;
+                            int sz = loc.z << 5;
+                            for (int x = sx; x < sx + 32; x++) {
+                                for (int z = sz; z < sz + 32; z++) {
+                                    ChunkManager.manager.unloadChunk(area.worldname, new ChunkLoc(x, z), true, true);
                                 }
-                            });
+                            }
+                            PS.debug("&d - Potentially skipping 1024 chunks");
+                            PS.debug("&d - TODO: recommend chunkster if corrupt");
                         }
+                        GlobalBlockQueue.IMP.addTask(() -> TaskManager.runTaskLater(task, 20));
                     });
                 }
             }

@@ -47,6 +47,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * The plot class<br>
@@ -310,14 +311,8 @@ public class Plot {
      * @return list of PlotPlayer(s) or an empty list
      */
     public List<PlotPlayer> getPlayersInPlot() {
-        ArrayList<PlotPlayer> players = new ArrayList<>();
-        for (Entry<String, PlotPlayer> entry : UUIDHandler.getPlayers().entrySet()) {
-            PlotPlayer pp = entry.getValue();
-            if (this.equals(pp.getCurrentPlot())) {
-                players.add(pp);
-            }
-        }
-        return players;
+        return UUIDHandler.getPlayers().values().stream().filter(plotPlayer -> this.equals(plotPlayer.getCurrentPlot())).collect
+                (Collectors.toList());
     }
 
     /**

@@ -24,13 +24,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * @author Jesse Boyd
@@ -486,10 +486,8 @@ public abstract class PlotArea {
     public Set<Plot> getPlots(UUID uuid) {
         HashSet<Plot> myplots = new HashSet<>();
         for (Plot plot : getPlots()) {
-            if (plot.isBasePlot()) {
-                if (plot.isOwner(uuid)) {
-                    myplots.add(plot);
-                }
+            if (plot.isBasePlot() && plot.isOwner(uuid)) {
+                myplots.add(plot);
             }
         }
         return myplots;
@@ -618,20 +616,11 @@ public abstract class PlotArea {
 
     public Set<Plot> getBasePlots() {
         HashSet<Plot> myPlots = new HashSet<>(getPlots());
-        Iterator<Plot> iterator = myPlots.iterator();
-        while (iterator.hasNext()) {
-            if (!iterator.next().isBasePlot()) {
-                iterator.remove();
-            }
-        }
-        return myPlots;
+        return getPlots().stream().filter(Plot::isBasePlot).collect(Collectors.toSet());
     }
 
     public void foreachPlotAbs(RunnableVal<Plot> run) {
-        for (Entry<PlotId, Plot> entry : this.plots.entrySet()) {
-            run.run(entry.getValue());
-        }
-
+        plots.forEach((plotId, plot) -> run.run(plot));
     }
 
     public void foreachBasePlot(RunnableVal<Plot> run) {

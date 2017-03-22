@@ -19,8 +19,6 @@ import com.plotsquared.general.commands.Command;
 import com.plotsquared.general.commands.CommandDeclaration;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -38,28 +36,25 @@ public class Rate extends SubCommand {
     public boolean onCommand(final PlotPlayer player, String[] args) {
         if (args.length == 1) {
             switch (args[0].toLowerCase()) {
-                case "next": {
+                case "next":
                     ArrayList<Plot> plots = new ArrayList<>(PS.get().getBasePlots());
-                    Collections.sort(plots, new Comparator<Plot>() {
-                        @Override
-                        public int compare(Plot p1, Plot p2) {
-                            double v1 = 0;
-                            if (!p1.getRatings().isEmpty()) {
-                                for (Entry<UUID, Rating> entry : p1.getRatings().entrySet()) {
-                                    v1 -= 11 - entry.getValue().getAverageRating();
-                                }
+                    plots.sort((p1, p2) -> {
+                        double v1 = 0;
+                        if (!p1.getRatings().isEmpty()) {
+                            for (Entry<UUID, Rating> entry : p1.getRatings().entrySet()) {
+                                v1 -= 11 - entry.getValue().getAverageRating();
                             }
-                            double v2 = 0;
-                            if (!p2.getRatings().isEmpty()) {
-                                for (Entry<UUID, Rating> entry : p2.getRatings().entrySet()) {
-                                    v2 -= 11 - entry.getValue().getAverageRating();
-                                }
-                            }
-                            if (v1 == v2) {
-                                return -0;
-                            }
-                            return v2 > v1 ? 1 : -1;
                         }
+                        double v2 = 0;
+                        if (!p2.getRatings().isEmpty()) {
+                            for (Entry<UUID, Rating> entry : p2.getRatings().entrySet()) {
+                                v2 -= 11 - entry.getValue().getAverageRating();
+                            }
+                        }
+                        if (v1 == v2) {
+                            return -0;
+                        }
+                        return v2 > v1 ? 1 : -1;
                     });
                     UUID uuid = player.getUUID();
                     for (Plot p : plots) {
@@ -72,8 +67,7 @@ public class Rate extends SubCommand {
                     }
                     MainUtil.sendMessage(player, C.FOUND_NO_PLOTS);
                     return false;
-                }
-                case "purge": {
+                case "purge":
                     final Plot plot = player.getCurrentPlot();
                     if (plot == null) {
                         return !sendMessage(player, C.NOT_IN_PLOT);
@@ -84,7 +78,6 @@ public class Rate extends SubCommand {
                     plot.clearRatings();
                     C.RATINGS_PURGED.send(player);
                     return true;
-                }
             }
         }
         final Plot plot = player.getCurrentPlot();
@@ -150,12 +143,9 @@ public class Rate extends SubCommand {
             };
             if (plot.getSettings().ratings == null) {
                 if (!Settings.Enabled_Components.RATING_CACHE) {
-                    TaskManager.runTaskAsync(new Runnable() {
-                        @Override
-                        public void run() {
-                            plot.getSettings().ratings = DBFunc.getRatings(plot);
-                            run.run();
-                        }
+                    TaskManager.runTaskAsync(() -> {
+                        plot.getSettings().ratings = DBFunc.getRatings(plot);
+                        run.run();
                     });
                     return true;
                 }
@@ -181,26 +171,20 @@ public class Rate extends SubCommand {
             return false;
         }
         final UUID uuid = player.getUUID();
-        final Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                if (plot.getRatings().containsKey(uuid)) {
-                    sendMessage(player, C.RATING_ALREADY_EXISTS, plot.getId().toString());
-                    return;
-                }
-                Rating result = EventUtil.manager.callRating(player, plot, new Rating(rating));
-                plot.addRating(uuid, result);
-                sendMessage(player, C.RATING_APPLIED, plot.getId().toString());
+        final Runnable run = () -> {
+            if (plot.getRatings().containsKey(uuid)) {
+                sendMessage(player, C.RATING_ALREADY_EXISTS, plot.getId().toString());
+                return;
             }
+            Rating result = EventUtil.manager.callRating(player, plot, new Rating(rating));
+            plot.addRating(uuid, result);
+            sendMessage(player, C.RATING_APPLIED, plot.getId().toString());
         };
         if (plot.getSettings().ratings == null) {
             if (!Settings.Enabled_Components.RATING_CACHE) {
-                TaskManager.runTaskAsync(new Runnable() {
-                    @Override
-                    public void run() {
-                        plot.getSettings().ratings = DBFunc.getRatings(plot);
-                        run.run();
-                    }
+                TaskManager.runTaskAsync(() -> {
+                    plot.getSettings().ratings = DBFunc.getRatings(plot);
+                    run.run();
                 });
                 return true;
             }

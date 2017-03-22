@@ -103,7 +103,7 @@ public abstract class ChunkManager {
                     }
                 }
             }, whenDone);
-        })
+        });
     }
 
     public static void chunkTask(final Plot plot, final RunnableVal<int[]> task, final Runnable whenDone, final int allocate) {

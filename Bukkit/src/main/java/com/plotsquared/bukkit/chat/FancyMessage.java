@@ -29,6 +29,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -397,7 +398,7 @@ public class FancyMessage implements JsonRepresentedObject, Cloneable, Iterable<
      * @return This builder instance.
      */
     public FancyMessage tooltip(final Iterable<String> lines) {
-        tooltip(com.plotsquared.bukkit.chat.ArrayWrapper.toArray(lines, String.class));
+        tooltip(ArrayWrapper.toArray(lines, String.class));
         return this;
     }
 
@@ -486,7 +487,7 @@ public class FancyMessage implements JsonRepresentedObject, Cloneable, Iterable<
      * @return This builder instance.
      */
     public FancyMessage formattedTooltip(final Iterable<FancyMessage> lines) {
-        return formattedTooltip(com.plotsquared.bukkit.chat.ArrayWrapper.toArray(lines, FancyMessage.class));
+        return formattedTooltip(ArrayWrapper.toArray(lines, FancyMessage.class));
     }
 
     /**
@@ -527,9 +528,7 @@ public class FancyMessage implements JsonRepresentedObject, Cloneable, Iterable<
      * @return This builder instance.
      */
     public FancyMessage translationReplacements(final FancyMessage... replacements) {
-        for (FancyMessage str : replacements) {
-            latest().translationReplacements.add(str);
-        }
+        Collections.addAll(latest().translationReplacements, replacements);
 
         dirty = true;
 
@@ -543,7 +542,7 @@ public class FancyMessage implements JsonRepresentedObject, Cloneable, Iterable<
      * @return This builder instance.
      */
     public FancyMessage translationReplacements(final Iterable<FancyMessage> replacements) {
-        return translationReplacements(com.plotsquared.bukkit.chat.ArrayWrapper.toArray(replacements, FancyMessage.class));
+        return translationReplacements(ArrayWrapper.toArray(replacements, FancyMessage.class));
     }
 
     /**
@@ -846,13 +845,13 @@ public class FancyMessage implements JsonRepresentedObject, Cloneable, Iterable<
                     if (entry.getValue().getAsBoolean()) {
                         component.styles.add(MessagePart.stylesToNames.inverse().get(entry.getKey()));
                     }
-                } else if (entry.getKey().equals("color")) {
+                } else if ("color".equals(entry.getKey())) {
                     component.color = ChatColor.valueOf(entry.getValue().getAsString().toUpperCase());
-                } else if (entry.getKey().equals("clickEvent")) {
+                } else if ("clickEvent".equals(entry.getKey())) {
                     JsonObject object = entry.getValue().getAsJsonObject();
                     component.clickActionName = object.get("action").getAsString();
                     component.clickActionData = object.get("value").getAsString();
-                } else if (entry.getKey().equals("hoverEvent")) {
+                } else if ("hoverEvent".equals(entry.getKey())) {
                     JsonObject object = entry.getValue().getAsJsonObject();
                     component.hoverActionName = object.get("action").getAsString();
                     if (object.get("value").isJsonPrimitive()) {
@@ -864,9 +863,9 @@ public class FancyMessage implements JsonRepresentedObject, Cloneable, Iterable<
                         // Therefore, recursion time!
                         component.hoverActionData = deserialize(object.get("value").toString() /* This should properly serialize the JSON object as a JSON string */);
                     }
-                } else if (entry.getKey().equals("insertion")) {
+                } else if ("insertion".equals(entry.getKey())) {
                     component.insertionData = entry.getValue().getAsString();
-                } else if (entry.getKey().equals("with")) {
+                } else if ("with".equals(entry.getKey())) {
                     for (JsonElement object : entry.getValue().getAsJsonArray()) {
                         if (object.isJsonPrimitive()) {
                             component.translationReplacements.add(new JsonString(object.getAsString()));

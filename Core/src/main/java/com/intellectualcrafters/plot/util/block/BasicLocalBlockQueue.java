@@ -140,11 +140,11 @@ public abstract class BasicLocalBlockQueue<T> extends LocalBlockQueue {
     }
 
     public final void setChunk(LocalChunk<T> chunk) {
-        LocalChunk previous = this.blocks.put(chunk.longHash(), (LocalChunk) chunk);
+        LocalChunk previous = this.blocks.put(chunk.longHash(), chunk);
         if (previous != null) {
             chunks.remove(previous);
         }
-        chunks.add((LocalChunk) chunk);
+        chunks.add(chunk);
     }
 
     public abstract class LocalChunk<T> {

@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class BukkitPlotGenerator extends ChunkGenerator implements GeneratorWrapper<ChunkGenerator> {
     
@@ -241,17 +242,13 @@ public class BukkitPlotGenerator extends ChunkGenerator implements GeneratorWrap
         } catch (Exception e) {
             e.printStackTrace();
         }
-        ArrayList<BlockPopulator> toAdd = new ArrayList<>();
+        ArrayList<BlockPopulator> toAdd;
         List<BlockPopulator> existing = world.getPopulators();
         if (populators == null && platformGenerator != null) {
             populators = new ArrayList<>(platformGenerator.getDefaultPopulators(world));
         }
-        for (BlockPopulator populator : this.populators) {
-            if (!existing.contains(populator)) {
-                toAdd.add(populator);
-            }
-        }
-        return toAdd;
+        assert populators != null;
+        return this.populators.stream().filter(populator -> !existing.contains(populator)).collect(Collectors.toList());
     }
 
     @Override

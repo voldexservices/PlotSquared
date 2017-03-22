@@ -237,12 +237,7 @@ public class BukkitChunkManager extends ChunkManager {
                     final LocalBlockQueue queue = GlobalBlockQueue.IMP.getNewQueue(world, false);
                     RegionWrapper currentPlotClear = new RegionWrapper(pos1.getX(), pos2.getX(), pos1.getZ(), pos2.getZ());
                     if (xxb >= p1x && xxt <= p2x && zzb >= p1z && zzt <= p2z) {
-                        AugmentedUtils.bypass(ignoreAugment, new Runnable() {
-                            @Override
-                            public void run() {
-                                queue.regenChunkSafe(chunk.x, chunk.z);
-                            }
-                        });
+                        AugmentedUtils.bypass(ignoreAugment, () -> queue.regenChunkSafe(chunk.x, chunk.z));
                         continue;
                     }
                     boolean checkX1 = false;
@@ -305,41 +300,36 @@ public class BukkitChunkManager extends ChunkManager {
                         map.saveRegion(worldObj, xxt2, xxt, zzt2, zzt); //
                     }
                     map.saveEntitiesOut(chunkObj, currentPlotClear);
-                    AugmentedUtils.bypass(ignoreAugment, new Runnable() {
+                    AugmentedUtils.bypass(ignoreAugment, () -> setChunkInPlotArea(null, new RunnableVal<ScopedLocalBlockQueue>() {
                         @Override
-                        public void run() {
-                            setChunkInPlotArea(null, new RunnableVal<ScopedLocalBlockQueue>() {
-                                @Override
-                                public void run(ScopedLocalBlockQueue value) {
-                                    Location min = value.getMin();
-                                    int bx = min.getX();
-                                    int bz = min.getZ();
-                                    for (int x = 0; x < 16; x++) {
-                                        for (int z = 0; z < 16; z++) {
-                                            PlotLoc loc = new PlotLoc(bx + x, bz + z);
-                                            PlotBlock[] ids = map.allBlocks.get(loc);
-                                            if (ids != null) {
-                                                for (int y = 0; y < Math.min(128, ids.length); y++) {
-                                                    PlotBlock id = ids[y];
-                                                    if (id != null) {
-                                                        value.setBlock(x, y, z, id);
-                                                    } else {
-                                                        value.setBlock(x, y, z, 0, (byte) 0);
-                                                    }
-                                                }
-                                                for (int y = Math.min(128, ids.length); y < ids.length; y++) {
-                                                    PlotBlock id = ids[y];
-                                                    if (id != null) {
-                                                        value.setBlock(x, y, z, id);
-                                                    }
-                                                }
+                        public void run(ScopedLocalBlockQueue value) {
+                            Location min = value.getMin();
+                            int bx = min.getX();
+                            int bz = min.getZ();
+                            for (int x1 = 0; x1 < 16; x1++) {
+                                for (int z1 = 0; z1 < 16; z1++) {
+                                    PlotLoc loc = new PlotLoc(bx + x1, bz + z1);
+                                    PlotBlock[] ids = map.allBlocks.get(loc);
+                                    if (ids != null) {
+                                        for (int y = 0; y < Math.min(128, ids.length); y++) {
+                                            PlotBlock id = ids[y];
+                                            if (id != null) {
+                                                value.setBlock(x1, y, z1, id);
+                                            } else {
+                                                value.setBlock(x1, y, z1, 0, (byte) 0);
+                                            }
+                                        }
+                                        for (int y = Math.min(128, ids.length); y < ids.length; y++) {
+                                            PlotBlock id = ids[y];
+                                            if (id != null) {
+                                                value.setBlock(x1, y, z1, id);
                                             }
                                         }
                                     }
                                 }
-                            }, world, chunk);
+                            }
                         }
-                    });
+                    }, world, chunk));
                     map.restoreBlocks(worldObj, 0, 0);
                     map.restoreEntities(worldObj, 0, 0);
                 }
@@ -380,13 +370,7 @@ public class BukkitChunkManager extends ChunkManager {
     @Override
     public void unloadChunk(final String world, final ChunkLoc loc, final boolean save, final boolean safe) {
         if (!PS.get().isMainThread(Thread.currentThread())) {
-            TaskManager.runTask(new Runnable() {
-                @SuppressWarnings("deprecation")
-                @Override
-                public void run() {
-                    BukkitUtil.getWorld(world).unloadChunk(loc.x, loc.z, save, safe);
-                }
-            });
+            TaskManager.runTask(() -> BukkitUtil.getWorld(world).unloadChunk(loc.x, loc.z, save, safe));
         } else {
             BukkitUtil.getWorld(world).unloadChunk(loc.x, loc.z, save, safe);
         }
@@ -411,14 +395,11 @@ public class BukkitChunkManager extends ChunkManager {
                 maps.add(swapChunk(world1, world2, chunk1, chunk2, region1, region2));
             }
         }
-        GlobalBlockQueue.IMP.addTask(new Runnable() {
-            @Override
-            public void run() {
-                for (ContentMap map : maps) {
-                    map.restoreBlocks(world1, 0, 0);
-                    map.restoreEntities(world1, 0, 0);
-                    TaskManager.runTaskLater(whenDone, 1);
-                }
+        GlobalBlockQueue.IMP.addTask(() -> {
+            for (ContentMap map : maps) {
+                map.restoreBlocks(world1, 0, 0);
+                map.restoreEntities(world1, 0, 0);
+                TaskManager.runTaskLater(whenDone, 1);
             }
         });
     }

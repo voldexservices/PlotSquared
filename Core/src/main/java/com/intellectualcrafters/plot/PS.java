@@ -52,6 +52,7 @@ import com.intellectualcrafters.plot.util.expiry.ExpireManager;
 import com.intellectualcrafters.plot.util.expiry.ExpiryTask;
 import com.plotsquared.listener.WESubscriber;
 import com.sk89q.worldedit.WorldEdit;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -79,6 +80,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -1150,15 +1152,7 @@ public class PS {
      * @return Set of plot
      */
     public Set<Plot> getPlots(String world, UUID uuid) {
-        ArrayList<Plot> myPlots = new ArrayList<>();
-        for (Plot plot : getPlots(world)) {
-            if (plot.hasOwner()) {
-                if (plot.isOwnerAbs(uuid)) {
-                    myPlots.add(plot);
-                }
-            }
-        }
-        return new HashSet<>(myPlots);
+        return getPlots(world).stream().filter(Plot::hasOwner).filter(plot -> plot.isOwnerAbs(uuid)).collect(Collectors.toSet());
     }
 
     /**
@@ -1168,15 +1162,7 @@ public class PS {
      * @return Set of plot
      */
     public Set<Plot> getPlots(PlotArea area, UUID uuid) {
-        ArrayList<Plot> myplots = new ArrayList<>();
-        for (Plot plot : getPlots(area)) {
-            if (plot.hasOwner()) {
-                if (plot.isOwnerAbs(uuid)) {
-                    myplots.add(plot);
-                }
-            }
-        }
-        return new HashSet<>(myplots);
+        return getPlots(area).stream().filter(Plot::hasOwner).filter(plot -> plot.isOwnerAbs(uuid)).collect(Collectors.toSet());
     }
 
     /**
@@ -1983,23 +1969,17 @@ public class PS {
 
     public void foreachPlot(RunnableVal<Plot> runnable) {
         for (PlotArea area : this.plotAreas) {
-            for (Plot plot : area.getPlots()) {
-                runnable.run(plot);
-            }
+            area.getPlots().forEach(runnable::run);
         }
     }
 
     public void foreachPlotRaw(RunnableVal<Plot> runnable) {
         for (PlotArea area : this.plotAreas) {
-            for (Plot plot : area.getPlots()) {
-                runnable.run(plot);
-            }
+            area.getPlots().forEach(runnable::run);
         }
         if (this.plots_tmp != null) {
             for (HashMap<PlotId, Plot> entry : this.plots_tmp.values()) {
-                for (Plot entry2 : entry.values()) {
-                    runnable.run(entry2);
-                }
+                entry.values().forEach(runnable::run);
             }
         }
     }

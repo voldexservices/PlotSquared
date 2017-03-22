@@ -79,137 +79,126 @@ public class BukkitHybridUtils extends HybridUtils {
             final short[][][] oldBlocks = new short[256][width][length];
             final short[][][] newBlocks = new short[256][width][length];
 
-            final Runnable run = new Runnable() {
+            final Runnable run = () -> ChunkManager.chunkTask(bot, top, new RunnableVal<int[]>() {
                 @Override
-                public void run() {
-                    ChunkManager.chunkTask(bot, top, new RunnableVal<int[]>() {
-                        @Override
-                        public void run(int[] value) {
-                            // [chunkx, chunkz, pos1x, pos1z, pos2x, pos2z, isedge]
-                            int X = value[0];
-                            int Z = value[1];
-                            short[][] result = gen.generateExtBlockSections(worldObj, r, X, Z, nullBiomeGrid);
-                            int xb = (X << 4) - bx;
-                            int zb = (Z << 4) - bz;
-                            for (int i = 0; i < result.length; i++) {
-                                if (result[i] == null) {
-                                    for (int j = 0; j < 4096; j++) {
-                                        int x = MainUtil.x_loc[i][j] + xb;
-                                        if (x < 0 || x >= width) {
-                                            continue;
-                                        }
-                                        int z = MainUtil.z_loc[i][j] + zb;
-                                        if (z < 0 || z >= length) {
-                                            continue;
-                                        }
-                                        int y = MainUtil.y_loc[i][j];
-                                        oldBlocks[y][x][z] = 0;
-                                    }
+                public void run(int[] value) {
+                    // [chunkx, chunkz, pos1x, pos1z, pos2x, pos2z, isedge]
+                    int X = value[0];
+                    int Z = value[1];
+                    short[][] result = gen.generateExtBlockSections(worldObj, r, X, Z, nullBiomeGrid);
+                    int xb = (X << 4) - bx;
+                    int zb = (Z << 4) - bz;
+                    for (int i = 0; i < result.length; i++) {
+                        if (result[i] == null) {
+                            for (int j = 0; j < 4096; j++) {
+                                int x = MainUtil.x_loc[i][j] + xb;
+                                if (x < 0 || x >= width) {
                                     continue;
                                 }
-                                for (int j = 0; j < result[i].length; j++) {
-                                    int x = MainUtil.x_loc[i][j] + xb;
-                                    if (x < 0 || x >= width) {
-                                        continue;
-                                    }
-                                    int z = MainUtil.z_loc[i][j] + zb;
-                                    if (z < 0 || z >= length) {
-                                        continue;
-                                    }
-                                    int y = MainUtil.y_loc[i][j];
-                                    oldBlocks[y][x][z] = result[i][j];
+                                int z = MainUtil.z_loc[i][j] + zb;
+                                if (z < 0 || z >= length) {
+                                    continue;
                                 }
+                                int y = MainUtil.y_loc[i][j];
+                                oldBlocks[y][x][z] = 0;
                             }
-
+                            continue;
                         }
-                    }, new Runnable() {
-                        @Override
-                        public void run() {
-                            TaskManager.runTaskAsync(() -> {
-                                int size = width * length;
-                                int[] changes = new int[size];
-                                int[] faces = new int[size];
-                                int[] data = new int[size];
-                                int[] air = new int[size];
-                                int[] variety = new int[size];
-                                int i = 0;
-                                for (int x = 0; x < width; x++) {
-                                    for (int z = 0; z < length; z++) {
-                                        HashSet<Short> types = new HashSet<>();
-                                        for (int y = 0; y < 256; y++) {
-                                            short old = oldBlocks[y][x][z];
-                                            short now = newBlocks[y][x][z];
-                                            if (old != now) {
-                                                changes[i]++;
-                                            }
-                                            if (now == 0) {
-                                                air[i]++;
-                                            } else {
-                                                // check vertices
-                                                // modifications_adjacent
-                                                if (x > 0 && z > 0 && y > 0 && x < width - 1 && z < length - 1 && y < 255) {
-                                                    if (newBlocks[y - 1][x][z] == 0) {
-                                                        faces[i]++;
-                                                    }
-                                                    if (newBlocks[y][x - 1][z] == 0) {
-                                                        faces[i]++;
-                                                    }
-                                                    if (newBlocks[y][x][z - 1] == 0) {
-                                                        faces[i]++;
-                                                    }
-                                                    if (newBlocks[y + 1][x][z] == 0) {
-                                                        faces[i]++;
-                                                    }
-                                                    if (newBlocks[y][x + 1][z] == 0) {
-                                                        faces[i]++;
-                                                    }
-                                                    if (newBlocks[y][x][z + 1] == 0) {
-                                                        faces[i]++;
-                                                    }
-                                                }
-
-                                                Material material = Material.getMaterial(now);
-                                                if (material != null) {
-                                                    Class<? extends MaterialData> md = material.getData();
-                                                    if (md.equals(Directional.class)) {
-                                                        data[i] += 8;
-                                                    } else if (!md.equals(MaterialData.class)) {
-                                                        data[i]++;
-                                                    }
-                                                }
-                                                types.add(now);
-                                            }
-                                        }
-                                        variety[i] = types.size();
-                                        i++;
-                                    }
-                                }
-                                // analyze plot
-                                // put in analysis obj
-
-                                // run whenDone
-                                PlotAnalysis analysis = new PlotAnalysis();
-                                analysis.changes = (int) (MathMan.getMean(changes) * 100);
-                                analysis.faces = (int) (MathMan.getMean(faces) * 100);
-                                analysis.data = (int) (MathMan.getMean(data) * 100);
-                                analysis.air = (int) (MathMan.getMean(air) * 100);
-                                analysis.variety = (int) (MathMan.getMean(variety) * 100);
-
-                                analysis.changes_sd = (int) MathMan.getSD(changes, analysis.changes);
-                                analysis.faces_sd = (int) MathMan.getSD(faces, analysis.faces);
-                                analysis.data_sd = (int) MathMan.getSD(data, analysis.data);
-                                analysis.air_sd = (int) MathMan.getSD(air, analysis.air);
-                                analysis.variety_sd = (int) MathMan.getSD(variety, analysis.variety);
-                                System.gc();
-                                System.gc();
-                                whenDone.value = analysis;
-                                whenDone.run();
-                            });
+                        for (int j = 0; j < result[i].length; j++) {
+                            int x = MainUtil.x_loc[i][j] + xb;
+                            if (x < 0 || x >= width) {
+                                continue;
+                            }
+                            int z = MainUtil.z_loc[i][j] + zb;
+                            if (z < 0 || z >= length) {
+                                continue;
+                            }
+                            int y = MainUtil.y_loc[i][j];
+                            oldBlocks[y][x][z] = result[i][j];
                         }
-                    }, 5);
+                    }
 
                 }
-            };
+            }, () -> TaskManager.runTaskAsync(() -> {
+                int size = width * length;
+                int[] changes = new int[size];
+                int[] faces = new int[size];
+                int[] data = new int[size];
+                int[] air = new int[size];
+                int[] variety = new int[size];
+                int i = 0;
+                for (int x = 0; x < width; x++) {
+                    for (int z = 0; z < length; z++) {
+                        HashSet<Short> types = new HashSet<>();
+                        for (int y = 0; y < 256; y++) {
+                            short old = oldBlocks[y][x][z];
+                            short now = newBlocks[y][x][z];
+                            if (old != now) {
+                                changes[i]++;
+                            }
+                            if (now == 0) {
+                                air[i]++;
+                            } else {
+                                // check vertices
+                                // modifications_adjacent
+                                if (x > 0 && z > 0 && y > 0 && x < width - 1 && z < length - 1 && y < 255) {
+                                    if (newBlocks[y - 1][x][z] == 0) {
+                                        faces[i]++;
+                                    }
+                                    if (newBlocks[y][x - 1][z] == 0) {
+                                        faces[i]++;
+                                    }
+                                    if (newBlocks[y][x][z - 1] == 0) {
+                                        faces[i]++;
+                                    }
+                                    if (newBlocks[y + 1][x][z] == 0) {
+                                        faces[i]++;
+                                    }
+                                    if (newBlocks[y][x + 1][z] == 0) {
+                                        faces[i]++;
+                                    }
+                                    if (newBlocks[y][x][z + 1] == 0) {
+                                        faces[i]++;
+                                    }
+                                }
+
+                                Material material = Material.getMaterial(now);
+                                if (material != null) {
+                                    Class<? extends MaterialData> md = material.getData();
+                                    if (md.equals(Directional.class)) {
+                                        data[i] += 8;
+                                    } else if (!md.equals(MaterialData.class)) {
+                                        data[i]++;
+                                    }
+                                }
+                                types.add(now);
+                            }
+                        }
+                        variety[i] = types.size();
+                        i++;
+                    }
+                }
+                // analyze plot
+                // put in analysis obj
+
+                // run whenDone
+                PlotAnalysis analysis = new PlotAnalysis();
+                analysis.changes = (int) (MathMan.getMean(changes) * 100);
+                analysis.faces = (int) (MathMan.getMean(faces) * 100);
+                analysis.data = (int) (MathMan.getMean(data) * 100);
+                analysis.air = (int) (MathMan.getMean(air) * 100);
+                analysis.variety = (int) (MathMan.getMean(variety) * 100);
+
+                analysis.changes_sd = (int) MathMan.getSD(changes, analysis.changes);
+                analysis.faces_sd = (int) MathMan.getSD(faces, analysis.faces);
+                analysis.data_sd = (int) MathMan.getSD(data, analysis.data);
+                analysis.air_sd = (int) MathMan.getSD(air, analysis.air);
+                analysis.variety_sd = (int) MathMan.getSD(variety, analysis.variety);
+                System.gc();
+                System.gc();
+                whenDone.value = analysis;
+                whenDone.run();
+            }), 5);
             System.gc();
             MainUtil.initCache();
             ChunkManager.chunkTask(bot, top, new RunnableVal<int[]>() {

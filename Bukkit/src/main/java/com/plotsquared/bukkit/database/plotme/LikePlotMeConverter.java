@@ -12,6 +12,11 @@ import com.intellectualcrafters.plot.object.PlotArea;
 import com.intellectualcrafters.plot.object.PlotId;
 import com.intellectualcrafters.plot.util.TaskManager;
 import com.plotsquared.bukkit.generator.BukkitPlotGenerator;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
+import org.bukkit.command.CommandException;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -27,10 +32,6 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
-import org.bukkit.command.CommandException;
 
 public class LikePlotMeConverter {
 
@@ -190,10 +191,7 @@ public class LikePlotMeConverter {
                 }
             }
             HashMap<String, HashMap<PlotId, Plot>> plots = connector.getPlotMePlots(connection);
-            int plotCount = 0;
-            for (Entry<String, HashMap<PlotId, Plot>> entry : plots.entrySet()) {
-                plotCount += entry.getValue().size();
-            }
+            int plotCount = plots.entrySet().stream().mapToInt(entry -> entry.getValue().size()).sum();
             if (!Settings.Enabled_Components.PLOTME_CONVERTER) {
                 return false;
             }
@@ -254,21 +252,18 @@ public class LikePlotMeConverter {
             sendMessage("Creating plot DB");
             Thread.sleep(1000);
             final AtomicBoolean done = new AtomicBoolean(false);
-            DBFunc.createPlotsAndData(createdPlots, new Runnable() {
-                @Override
-                public void run() {
-                    if (done.get()) {
-                        done();
-                        sendMessage("&aDatabase conversion is now complete!");
-                        PS.debug("&c - Stop the server");
-                        PS.debug("&c - Disable 'plotme-converter' and 'plotme-convert.cache-uuids' in the settings.yml");
-                        PS.debug("&c - Correct any generator settings that haven't copied to 'settings.yml' properly");
-                        PS.debug("&c - Start the server");
-                        PS.get().setPlots(DBFunc.getPlots());
-                    } else {
-                        sendMessage("&cPlease wait until database conversion is complete. You will be notified with instructions when this happens!");
-                        done.set(true);
-                    }
+            DBFunc.createPlotsAndData(createdPlots, () -> {
+                if (done.get()) {
+                    done();
+                    sendMessage("&aDatabase conversion is now complete!");
+                    PS.debug("&c - Stop the server");
+                    PS.debug("&c - Disable 'plotme-converter' and 'plotme-convert.cache-uuids' in the settings.yml");
+                    PS.debug("&c - Correct any generator settings that haven't copied to 'settings.yml' properly");
+                    PS.debug("&c - Start the server");
+                    PS.get().setPlots(DBFunc.getPlots());
+                } else {
+                    sendMessage("&cPlease wait until database conversion is complete. You will be notified with instructions when this happens!");
+                    done.set(true);
                 }
             });
             sendMessage("Saving configuration...");
@@ -277,76 +272,73 @@ public class LikePlotMeConverter {
             } catch (IOException ignored) {
                 sendMessage(" - &cFailed to save configuration.");
             }
-            TaskManager.runTask(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        boolean mv = false;
-                        boolean mw = false;
-                        if ((Bukkit.getPluginManager().getPlugin("Multiverse-Core") != null) && Bukkit.getPluginManager().getPlugin("Multiverse-Core")
-                                .isEnabled()) {
-                            mv = true;
-                        } else if ((Bukkit.getPluginManager().getPlugin("MultiWorld") != null) && Bukkit.getPluginManager().getPlugin("MultiWorld")
-                                .isEnabled()) {
-                            mw = true;
+            TaskManager.runTask(() -> {
+                try {
+                    boolean mv = false;
+                    boolean mw = false;
+                    if ((Bukkit.getPluginManager().getPlugin("Multiverse-Core") != null) && Bukkit.getPluginManager().getPlugin("Multiverse-Core")
+                            .isEnabled()) {
+                        mv = true;
+                    } else if ((Bukkit.getPluginManager().getPlugin("MultiWorld") != null) && Bukkit.getPluginManager().getPlugin("MultiWorld")
+                            .isEnabled()) {
+                        mw = true;
+                    }
+                    for (String worldName : worlds) {
+                        World world = Bukkit.getWorld(getWorld(worldName));
+                        if (world == null) {
+                            sendMessage("&cInvalid world in PlotMe configuration: " + worldName);
+                            continue;
                         }
-                        for (String worldName : worlds) {
-                            World world = Bukkit.getWorld(getWorld(worldName));
-                            if (world == null) {
-                                sendMessage("&cInvalid world in PlotMe configuration: " + worldName);
-                                continue;
-                            }
-                            String actualWorldName = world.getName();
-                            sendMessage("Reloading generator for world: '" + actualWorldName + "'...");
-                            if (!Bukkit.getWorlds().isEmpty() && Bukkit.getWorlds().get(0).getName().equals(worldName)) {
-                                sendMessage("&cYou need to stop the server to reload this world properly");
-                            } else {
-                                PS.get().removePlotAreas(actualWorldName);
-                                if (mv) {
-                                    // unload world with MV
-                                    Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "mv unload " + actualWorldName);
-                                    try {
-                                        Thread.sleep(1000);
-                                    } catch (InterruptedException ignored) {
-                                        Thread.currentThread().interrupt();
-                                    }
-                                    // load world with MV
-                                    Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
-                                            "mv import " + actualWorldName + " normal -g " + PS.imp().getPluginName());
-                                } else if (mw) {
-                                    // unload world with MW
-                                    Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "mw unload " + actualWorldName);
-                                    try {
-                                        Thread.sleep(1000);
-                                    } catch (InterruptedException ignored) {
-                                        Thread.currentThread().interrupt();
-                                    }
-                                    // load world with MW
-                                    Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
-                                            "mw create " + actualWorldName + " plugin:" + PS.imp().getPluginName());
-                                } else {
-                                    // Load using Bukkit API
-                                    // - User must set generator manually
-                                    Bukkit.getServer().unloadWorld(world, true);
-                                    World myWorld = WorldCreator.name(actualWorldName).generator(new BukkitPlotGenerator(PS.get().IMP.getDefaultGenerator())).createWorld();
-                                    myWorld.save();
+                        String actualWorldName = world.getName();
+                        sendMessage("Reloading generator for world: '" + actualWorldName + "'...");
+                        if (!Bukkit.getWorlds().isEmpty() && Bukkit.getWorlds().get(0).getName().equals(worldName)) {
+                            sendMessage("&cYou need to stop the server to reload this world properly");
+                        } else {
+                            PS.get().removePlotAreas(actualWorldName);
+                            if (mv) {
+                                // unload world with MV
+                                Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "mv unload " + actualWorldName);
+                                try {
+                                    Thread.sleep(1000);
+                                } catch (InterruptedException ignored) {
+                                    Thread.currentThread().interrupt();
                                 }
+                                // load world with MV
+                                Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
+                                        "mv import " + actualWorldName + " normal -g " + PS.imp().getPluginName());
+                            } else if (mw) {
+                                // unload world with MW
+                                Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), "mw unload " + actualWorldName);
+                                try {
+                                    Thread.sleep(1000);
+                                } catch (InterruptedException ignored) {
+                                    Thread.currentThread().interrupt();
+                                }
+                                // load world with MW
+                                Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
+                                        "mw create " + actualWorldName + " plugin:" + PS.imp().getPluginName());
+                            } else {
+                                // Load using Bukkit API
+                                // - User must set generator manually
+                                Bukkit.getServer().unloadWorld(world, true);
+                                World myWorld = WorldCreator.name(actualWorldName).generator(new BukkitPlotGenerator(PS.get().IMP.getDefaultGenerator())).createWorld();
+                                myWorld.save();
                             }
                         }
-                    } catch (CommandException e) {
-                        e.printStackTrace();
                     }
-                    if (done.get()) {
-                        done();
-                        sendMessage("&aDatabase conversion is now complete!");
-                        PS.debug("&c - Stop the server");
-                        PS.debug("&c - Disable 'plotme-converter' and 'plotme-convert.cache-uuids' in the settings.yml");
-                        PS.debug("&c - Correct any generator settings that haven't copied to 'settings.yml' properly");
-                        PS.debug("&c - Start the server");
-                    } else {
-                        sendMessage("&cPlease wait until database conversion is complete. You will be notified with instructions when this happens!");
-                        done.set(true);
-                    }
+                } catch (CommandException e) {
+                    e.printStackTrace();
+                }
+                if (done.get()) {
+                    done();
+                    sendMessage("&aDatabase conversion is now complete!");
+                    PS.debug("&c - Stop the server");
+                    PS.debug("&c - Disable 'plotme-converter' and 'plotme-convert.cache-uuids' in the settings.yml");
+                    PS.debug("&c - Correct any generator settings that haven't copied to 'settings.yml' properly");
+                    PS.debug("&c - Start the server");
+                } else {
+                    sendMessage("&cPlease wait until database conversion is complete. You will be notified with instructions when this happens!");
+                    done.set(true);
                 }
             });
         } catch (InterruptedException | SQLException e) {

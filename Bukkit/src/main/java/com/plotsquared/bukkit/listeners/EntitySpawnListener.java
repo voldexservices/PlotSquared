@@ -7,6 +7,7 @@ import com.intellectualcrafters.plot.object.Plot;
 import com.intellectualcrafters.plot.object.PlotArea;
 import com.plotsquared.bukkit.util.BukkitUtil;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -33,11 +34,10 @@ public class EntitySpawnListener implements Listener {
         if (Settings.Done.RESTRICT_BUILDING && plot.hasFlag(Flags.DONE)) {
             event.setCancelled(true);
         }
-        switch (entity.getType()) {
-            case ENDER_CRYSTAL:
-                if (PlayerEvents.checkEntity(entity, plot)) {
-                    event.setCancelled(true);
-                }
+        if (entity.getType() == EntityType.ENDER_CRYSTAL) {
+            if (PlayerEvents.checkEntity(entity, plot)) {
+                event.setCancelled(true);
+            }
         }
     }
 }

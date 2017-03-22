@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -125,12 +124,7 @@ public abstract class Command {
     public List<Command> getCommands(CommandCategory cat, PlotPlayer player) {
         List<Command> commands = getCommands(player);
         if (cat != null) {
-            Iterator<Command> iterator = commands.iterator();
-            while (iterator.hasNext()) {
-                if (iterator.next().category != cat) {
-                    iterator.remove();
-                }
-            }
+            commands.removeIf(command -> command.category != cat);
         }
         return commands;
     }

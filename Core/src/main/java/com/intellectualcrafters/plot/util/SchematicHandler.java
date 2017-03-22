@@ -195,7 +195,7 @@ public abstract class SchematicHandler {
                     final int bcz = p1z >> 4;
                     final int tcx = p2x >> 4;
                     final int tcz = p2z >> 4;
-                    final ArrayList<ChunkLoc> chunks = new ArrayList<ChunkLoc>();
+                    final ArrayList<ChunkLoc> chunks = new ArrayList<>();
                     for (int x = bcx; x <= tcx; x++) {
                         for (int z = bcz; z <= tcz; z++) {
                             chunks.add(new ChunkLoc(x, z));
@@ -581,8 +581,8 @@ public abstract class SchematicHandler {
         schematic.put("WEOffsetZ", new IntTag("WEOffsetZ", 0));
         schematic.put("Blocks", new ByteArrayTag("Blocks", blocks));
         schematic.put("Data", new ByteArrayTag("Data", blockData));
-        schematic.put("Entities", new ListTag("Entities", CompoundTag.class, new ArrayList<Tag>()));
-        schematic.put("TileEntities", new ListTag("TileEntities", CompoundTag.class, new ArrayList<Tag>()));
+        schematic.put("Entities", new ListTag("Entities", CompoundTag.class, new ArrayList<>()));
+        schematic.put("TileEntities", new ListTag("TileEntities", CompoundTag.class, new ArrayList<>()));
         return new CompoundTag("Schematic", schematic);
     }
 
@@ -661,7 +661,7 @@ public abstract class SchematicHandler {
         }
 
         public void setFlags(Map<String, Tag> flags) {
-            this.flags = flags == null ? new HashMap<String, Tag>() : flags;
+            this.flags = flags == null ? new HashMap<>() : flags;
         }
 
         /**
@@ -681,7 +681,7 @@ public abstract class SchematicHandler {
          * @return Map of block location to tag
          */
         public HashMap<BlockLoc, CompoundTag> getTiles() {
-            return this.tiles == null ? new HashMap<BlockLoc, CompoundTag>() : this.tiles;
+            return this.tiles == null ? new HashMap<>() : this.tiles;
         }
 
         /**

@@ -119,15 +119,12 @@ public class PlotAnalysis {
 
                 final AtomicInteger mi = new AtomicInteger(0);
 
-                Thread ratingAnalysis = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (; mi.intValue() < plots.size(); mi.incrementAndGet()) {
-                            int i = mi.intValue();
-                            Plot plot = plots.get(i);
-                            ratings[i] = (int) ((plot.getAverageRating() + plot.getSettings().getRatings().size()) * 100);
-                            PS.debug(" | " + plot + " (rating) " + ratings[i]);
-                        }
+                Thread ratingAnalysis = new Thread(() -> {
+                    for (; mi.intValue() < plots.size(); mi.incrementAndGet()) {
+                        int i = mi.intValue();
+                        Plot plot = plots.get(i);
+                        ratings[i] = (int) ((plot.getAverageRating() + plot.getSettings().getRatings().size()) * 100);
+                        PS.debug(" | " + plot + " (rating) " + ratings[i]);
                     }
                 });
                 ratingAnalysis.start();

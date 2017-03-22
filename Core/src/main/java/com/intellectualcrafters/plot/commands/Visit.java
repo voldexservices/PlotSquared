@@ -17,7 +17,6 @@ import com.plotsquared.general.commands.CommandDeclaration;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -105,12 +104,7 @@ public class Visit extends Command {
             C.FOUND_NO_PLOTS.send(player);
             return;
         }
-        Iterator<Plot> iterator = unsorted.iterator();
-        while (iterator.hasNext()) {
-            if (!iterator.next().isBasePlot()) {
-                iterator.remove();
-            }
-        }
+        unsorted.removeIf(plot -> !plot.isBasePlot());
         if (page < 1 || page > unsorted.size()) {
             C.NOT_VALID_NUMBER.send(player, "(1, " + unsorted.size() + ")");
             return;

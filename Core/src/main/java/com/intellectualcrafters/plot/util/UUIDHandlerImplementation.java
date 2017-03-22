@@ -109,45 +109,39 @@ public abstract class UUIDHandlerImplementation {
           *   PlotMe conversion
          */
         if (!Settings.UUID.OFFLINE && !this.unknown.isEmpty()) {
-            TaskManager.runTaskAsync(new Runnable() {
-                @Override
-                public void run() {
-                    UUID offline = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name.value).getBytes(Charsets.UTF_8));
-                    if (!UUIDHandlerImplementation.this.unknown.contains(offline) && !name.value.equals(name.value.toLowerCase())) {
-                        offline = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name.value.toLowerCase()).getBytes(Charsets.UTF_8));
-                        if (!UUIDHandlerImplementation.this.unknown.contains(offline)) {
-                            offline = null;
-                        }
+            TaskManager.runTaskAsync(() -> {
+                UUID offline = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name.value).getBytes(Charsets.UTF_8));
+                if (!UUIDHandlerImplementation.this.unknown.contains(offline) && !name.value.equals(name.value.toLowerCase())) {
+                    offline = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name.value.toLowerCase()).getBytes(Charsets.UTF_8));
+                    if (!UUIDHandlerImplementation.this.unknown.contains(offline)) {
+                        offline = null;
                     }
-                    if (offline != null && !offline.equals(uuid)) {
-                        UUIDHandlerImplementation.this.unknown.remove(offline);
-                        Set<Plot> plots = PS.get().getPlotsAbs(offline);
-                        if (!plots.isEmpty()) {
-                            for (Plot plot : plots) {
-                                plot.owner = uuid;
-                            }
-                            DBFunc.replaceUUID(offline, uuid);
-                            PS.debug("&cDetected invalid UUID stored for: " + name.value);
-                            PS.debug("&7 - Did you recently switch to online-mode storage without running `uuidconvert`?");
-                            PS.debug("&6" + PS.imp().getPluginName() + " will update incorrect entries when the user logs in, or you can reconstruct your database.");
+                }
+                if (offline != null && !offline.equals(uuid)) {
+                    UUIDHandlerImplementation.this.unknown.remove(offline);
+                    Set<Plot> plots = PS.get().getPlotsAbs(offline);
+                    if (!plots.isEmpty()) {
+                        for (Plot plot : plots) {
+                            plot.owner = uuid;
                         }
+                        DBFunc.replaceUUID(offline, uuid);
+                        PS.debug("&cDetected invalid UUID stored for: " + name.value);
+                        PS.debug("&7 - Did you recently switch to online-mode storage without running `uuidconvert`?");
+                        PS.debug("&6" + PS.imp().getPluginName() + " will update incorrect entries when the user logs in, or you can reconstruct your database.");
                     }
                 }
             });
         } else if (Settings.UUID.FORCE_LOWERCASE && !this.unknown.isEmpty() && !name.value.equals(name.value.toLowerCase())) {
-            TaskManager.runTaskAsync(new Runnable() {
-                @Override
-                public void run() {
-                    UUID offlineUpper = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name.value).getBytes(Charsets.UTF_8));
-                    if (UUIDHandlerImplementation.this.unknown.contains(offlineUpper) && offlineUpper != null && !offlineUpper.equals(uuid)) {
-                        UUIDHandlerImplementation.this.unknown.remove(offlineUpper);
-                        Set<Plot> plots = PS.get().getPlotsAbs(offlineUpper);
-                        if (!plots.isEmpty()) {
-                            for (Plot plot : plots) {
-                                plot.owner = uuid;
-                            }
-                            replace(offlineUpper, uuid, name.value);
+            TaskManager.runTaskAsync(() -> {
+                UUID offlineUpper = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name.value).getBytes(Charsets.UTF_8));
+                if (UUIDHandlerImplementation.this.unknown.contains(offlineUpper) && !offlineUpper.equals(uuid)) {
+                    UUIDHandlerImplementation.this.unknown.remove(offlineUpper);
+                    Set<Plot> plots = PS.get().getPlotsAbs(offlineUpper);
+                    if (!plots.isEmpty()) {
+                        for (Plot plot : plots) {
+                            plot.owner = uuid;
                         }
+                        replace(offlineUpper, uuid, name.value);
                     }
                 }
             });

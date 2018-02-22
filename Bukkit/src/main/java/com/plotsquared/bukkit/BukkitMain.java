@@ -25,6 +25,7 @@ import com.plotsquared.bukkit.database.plotme.PlotMeConnector_017;
 import com.plotsquared.bukkit.generator.BukkitPlotGenerator;
 import com.plotsquared.bukkit.listeners.*;
 import com.plotsquared.bukkit.titles.DefaultTitle_111;
+import com.plotsquared.bukkit.titles.DefaultTitle_183;
 import com.plotsquared.bukkit.util.*;
 import com.plotsquared.bukkit.util.block.*;
 import com.plotsquared.bukkit.uuid.*;
@@ -118,9 +119,9 @@ public final class BukkitMain extends JavaPlugin implements Listener, IPlotMain 
                     this.version[2] = Integer.parseInt(split[2]);
                 }
             } catch (NumberFormatException e) {
-                e.printStackTrace();
-                PS.debug(StringMan.getString(Bukkit.getBukkitVersion()));
-                PS.debug(StringMan.getString(Bukkit.getBukkitVersion().split("-")[0].split("\\.")));
+//                e.printStackTrace();
+//                PS.debug(StringMan.getString(Bukkit.getBukkitVersion()));
+//                PS.debug(StringMan.getString(Bukkit.getBukkitVersion().split("-")[0].split("\\.")));
                 return new int[]{1, 10, 0};
             }
         }
@@ -679,7 +680,7 @@ public final class BukkitMain extends JavaPlugin implements Listener, IPlotMain 
             PS.log(C.PREFIX + " &c[WARN] Titles are disabled - please update your version of Bukkit to support this feature.");
             Settings.TITLES = false;
         } else {
-            AbstractTitle.TITLE_CLASS = new DefaultTitle_111();
+            AbstractTitle.TITLE_CLASS = new DefaultTitle_183();
             if (wrapper instanceof DefaultUUIDWrapper || wrapper.getClass() == OfflineUUIDWrapper.class && !Bukkit.getOnlineMode()) {
                 Settings.UUID.NATIVE_UUID_PROVIDER = true;
             }

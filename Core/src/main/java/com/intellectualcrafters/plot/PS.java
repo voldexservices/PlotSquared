@@ -445,8 +445,9 @@ public class PS{
      * @return true if `version` is >= `version2`
      */
     public boolean checkVersion(int[] version, int... version2) {
-        return version[0] > version2[0] || version[0] == version2[0] && version[1] > version2[1] || version[0] == version2[0]
-                && version[1] == version2[1] && version[2] >= version2[2];
+        return true;
+//        return version[0] > version2[0] || version[0] == version2[0] && version[1] > version2[1] || version[0] == version2[0]
+//                && version[1] == version2[1] && version[2] >= version2[2];
     }
 
     /**
